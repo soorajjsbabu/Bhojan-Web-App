@@ -1,17 +1,18 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <br>
+    <img alt="Vue logo" src="./assets/Logo.jpg">
+    <Bhojan msg="Bhojan"/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Bhojan from './components/Bhojan.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    Bhojan
   }
 }
 </script>
@@ -24,5 +25,8 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+img{
+  max-width: 15%;
 }
 </style>
