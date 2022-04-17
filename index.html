@@ -11,34 +11,51 @@
         <div id="food-donation">
             <div v-if="page === 'login'">
                 {{page}}
-                <label><input type="number" v-model="phoneNumber" placeholder="Enter your phone number"></label><br>
-                <button @click="login" class="btn btn-primary">Login</button>
+                <label><input type="number" @keyup.enter="login" v-model="phoneNumber" placeholder="Enter your phone number"></label><br>
+                <button @click="login"  class="btn btn-primary">Login</button>
                 
             </div>
             <div v-else-if="page === 'otp'">
-                <label><input type="number" v-model="otp" placeholder="Enter OTP"></label><br>
+                <label><input type="number" @keyup.enter="otpVerify" v-model="otp" placeholder="Enter OTP"></label><br>
                 <button @click="otpVerify" class="btn btn-primary">Verify</button>
                 <button @click="this.page = 'login'" class="btn btn-primary">Back</button>
             </div>
 
-            <div v-else class="header">
-                <h1>{{header || 'Welcome'}}</h1><br>
+            <div v-else-if="page === 'home'" class="header">
+                <h1>{{header || 'Welcome'}}</h1><button @click="this.page = 'profile'" class="btn btn-primary">Profile</button><br>
                 <button @click="showItem = !showItem" class="btn btn-primary">{{showItem ? "Cancel" :"Donate"}}</button>
 
                 <div v-if="showItem" class="donate-form">
-                    <label>Name: <input type="text" v-model="name"></label><br>
-                    <label>Phone Number: <input type="number" v-model="phoneNumber"></label><br>
-                    <label>Address line 1: <input type="text" v-model="addLine1"></label><br>
-                    <label>Address line 2: <input type="text" v-model="addLine2"></label><br>
-                    <label>Served For: <input type="number" v-model="servedFor"></label><br>
-                    <label><input type="checkbox" v-model="foodTypeVeg">Veg</label>
-                    <label><input type="checkbox" v-model="foodTypeNonVeg">Non Veg</label><br>
+                    <label>Name: <input type="text" v-model="form.name"></label><br>
+                    <label>Phone Number: <input type="number" v-model="form.phoneNumber"></label><br>
+                    <label>Address line 1: <input type="text" v-model="form.addLine1"></label><br>
+                    <label>Address line 2: <input type="text" v-model="form.addLine2"></label><br>
+                    <label>Served For: <input type="number" v-model="form.servedFor"></label><br>
+                    <label><input type="checkbox" v-model="form.foodTypeVeg">Veg</label>
+                    <label><input type="checkbox" v-model="form.foodTypeNonVeg">Non Veg</label><br>
                     <button @click="postNow" class="btn btn-primary">Submit</button>
-                    <button @click="this.page = 'login'" class="btn btn-primary">Sign out</button><br>
+                    <button @click="signOut" class="btn btn-primary">Sign out</button><br>
                     {{foodType}}{{page}}
                     <!-- {{formClick}} -->
                 </div>
             </div>
+
+            <div v-else-if="page === 'profile'" class="donate-form">
+                <label>Name: {{this.profile.name}}</label><br>
+                <label>Phone Number: {{this.phoneNumber}}</label><br>
+                <label>Email: {{this.profile.email}}</label><br>
+                <button @click="edit" class="btn btn-primary">Edit</button>
+                <button @click="this.page = 'home'" class="btn btn-primary">Back</button>
+            </div>
+
+            <div v-else-if="page === 'profile-edit'" class="donate-form">
+                <label>Name: <input type="text" v-model="profile.name"></label><br>
+                <label>Phone Number: {{this.phoneNumber}}</label><br>
+                <label>Email: <input type="text" v-model="profile.email"></label><br>
+                <button @click="save" class="btn btn-primary">Save</button>
+                <button @click="cancel" class="btn btn-primary">Cancel</button>
+            </div>
+
         </div>
         <script src="https://unpkg.com/vue@3"></script>
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -48,13 +65,21 @@
                     return{
                         page: 'login',
                         header: "Food Donation",
-                        name: '' ,
+                        form:{    
+                            name: '' ,
+                            phoneNumber: '',
+                            addLine1: '',
+                            addLine2: '',
+                            servedFor: 0,
+                            foodTypeVeg: false,
+                            foodTypeNonVeg: false,
+                        },
+                        profile:{
+                            fname: '',
+                            lname: '',
+                            email: '',
+                        },
                         phoneNumber: '',
-                        addLine1: '',
-                        addLine2: '',
-                        servedFor: 0,
-                        foodTypeVeg: false,
-                        foodTypeNonVeg: false,
                         otp: '',
                         showItem: true,
                         formClick: false,
@@ -68,17 +93,26 @@
                         headers: {
                             'Content-type': 'application/json',
                         }
-                    });  
+                    });
+                    
+                    this.profile.name = localStorage.getItem("name")
+                    this.phoneNumber = localStorage.getItem("phoneNumber")
+                    console.log(typeof(this.phoneNumber))
+                    this.profile.email = localStorage.getItem("email")
+                    if(this.phoneNumber){
+                        this.page = 'home'
+                    }
+
                 },
                 computed:{
                     foodType(){
-                        if(this.foodTypeVeg === true && this.foodTypeNonVeg === true){
+                        if(this.form.foodTypeVeg === true && this.form.foodTypeNonVeg === true){
                             return "Both"
                         }
-                        else if(this.foodTypeNonVeg === true){
+                        else if(this.form.foodTypeNonVeg === true){
                             return "Non Veg"
                         }
-                        else if(this.foodTypeVeg === true){
+                        else if(this.form.foodTypeVeg === true){
                             return "Veg"
                         }
                     }
@@ -89,28 +123,48 @@
                         console.log(axios)
                         
                         this.instance.post('/', {
-                            name: this.name,
-                            phoneNumber: this.phoneNumber,
-                            addLine1: this.addLine1,
-                            addLine2: this.addLine2,
-                            servedFor: this.servedFor,
-                            foodType: this.foodType,
+                            name: this.form.name,
+                            phoneNumber: this.form.phoneNumber,
+                            addLine1: this.form.addLine1,
+                            addLine2: this.form.addLine2,
+                            servedFor: this.form.servedFor,
+                            foodType: this.form.foodType,
                         })
                     },
                     login(){
                         this.page = 'otp'
+                        this.form.phoneNumber = this.phoneNumber
+                        console.log(this.form)
                     },
                     otpVerify(){
                         if(this.otp == '123'){
-                            this.page = 'home'
+                            this.page = 'home' 
                         }
                         else{
                             alert('OTP Incorrect')
-                            s
-                        }
-                        
+                        }   
+                    },
+                    signOut(){
+                        localStorage.removeItem("name")
+                        localStorage.removeItem("phoneNumber")
+                        localStorage.removeItem("email")
+                        this.phoneNumber = ''
+                        this.page = 'login'
+                    },
+                    edit(){
+                        this.page = 'profile-edit'
+                    },
+                    save(){
+                        this.page = 'profile'
+                        localStorage.setItem("name", this.profile.name)
+                        localStorage.setItem("phoneNumber", this.phoneNumber)
+                        localStorage.setItem("email", this.profile.email)
+                    },
+                    cancel(){
+                        this.profile.name = ''
+                        this.profile.email = ''
+                        this.page = 'profile'
                     }
-
                 }
             }).mount('#food-donation')
            
