@@ -2,91 +2,125 @@
     <head>
         <title>Food Donation</title>
         <style>
-            .donate-form{
-                line-height: 40px;
+            #app{
+                margin-top: 5%;
+                margin-left: 1%;
+            }
+            .profile{
+                line-height: 20px;
+            }
+            .donate-form, .profileEdit{
+                width: 25%;
             }
         </style>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@5.8.55/css/materialdesignicons.min.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css">
+        <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
     </head>
     <body>
-        <div id="food-donation">
+        <div id="app">
             <div v-if="page === 'login'">
-                {{page}}
-                <label><input type="number" @keyup.enter="login" v-model="phoneNumber" placeholder="Enter your phone number"></label><br>
-                <button @click="login"  class="btn btn-primary">Login</button>
+                <b-field>
+                    <b-input type="number" @keyup.native.enter="login" v-model="phoneNumber" style="width: 20%;" placeholder="Enter your phone number"></b-input>
+                </b-field>    
+                <b-button type="is-primary is-light" outlined @click="login" class="p-button-text">Login</b-button>
                 
             </div>
             <div v-else-if="page === 'otp'">
-                <label><input type="number" @keyup.enter="otpVerify" v-model="otp" placeholder="Enter OTP"></label><br>
-                <button @click="otpVerify" class="btn btn-primary">Verify</button>
-                <button @click="this.page = 'login'" class="btn btn-primary">Back</button>
+                <b-field>
+                    <b-input type="number" @keyup.native.enter="otpVerify" v-model="otp" placeholder="Enter OTP" style="width: 20%;"></b-input>
+                </b-field>     
+                {{phoneNumber}}
+                <b-button label="Verify" type="is-primary" size="is-medium" @click="otpVerify" />   
+                <b-button type="is-primary is-light" outlined @click="page = 'login'" class="p-button-text">Back</b-button>
             </div>
 
             <div v-else-if="page === 'home'" class="header">
-                <h1>{{header || 'Welcome'}}</h1><button @click="this.page = 'profile'" class="btn btn-primary">Profile</button><br>
-                <button @click="showItem = !showItem" class="btn btn-primary">{{showItem ? "Cancel" :"Donate"}}</button>
+                <h1>{{header}}</h1>
+                <b-button type="is-primary is-light" outlined @click="page = 'profile'" class="p-button-text">Profile</b-button>
+                <b-button type="is-primary is-light" outlined @click="signOut" class="p-button-text">Sign out</b-button><br><br>
+                <b-button type="is-primary is-light" rounded outlined @click="showItem = !showItem" class="btn btn-primary">{{showItem ? "Cancel" :"Donate"}}</b-button>
 
                 <div v-if="showItem" class="donate-form">
-                    <label>Name: <input type="text" v-model="form.name"></label><br>
-                    <label>Phone Number: <input type="number" v-model="form.phoneNumber"></label><br>
-                    <label>Address line 1: <input type="text" v-model="form.addLine1"></label><br>
-                    <label>Address line 2: <input type="text" v-model="form.addLine2"></label><br>
-                    <label>Served For: <input type="number" v-model="form.servedFor"></label><br>
-                    <label><input type="checkbox" v-model="form.foodTypeVeg">Veg</label>
-                    <label><input type="checkbox" v-model="form.foodTypeNonVeg">Non Veg</label><br>
-                    <button @click="postNow" class="btn btn-primary">Submit</button>
-                    <button @click="signOut" class="btn btn-primary">Sign out</button><br>
-                    {{foodType}}{{page}}
-                    <!-- {{formClick}} -->
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="content">        
+                                Name: <b-input type="text" v-model="form.name" ></b-input>
+                                Phone Number: <b-input type="number" v-model="form.phoneNumber" ></b-input><br>
+                                Address Line 1: <b-input type="text" v-model="form.addLine1" ></b-input></div><br>
+                                Address Line 2: <b-input type="text" v-model="form.addLine2" ></b-input><br>
+                                Served For: <b-input type="number" v-model="form.servedFor" ></b-input><br>
+                                <b-checkbox v-model="form.foodTypeVeg">Veg</b-checkbox>
+                                <b-checkbox v-model="form.foodTypeNonVeg">Non Veg</b-checkbox><br><br>
+                                
+                                <b-button type="is-primary is-light" outlined @click="postNow" class="p-button-text">Submit</b-button>
+                                </div>
+                            </div>
+                        </div>
+                            
+                    
+                </div>
+                <div v-else-if="page === 'profile'" class="profile">
+                    <label>Name: {{profile.name}}</label><br>
+                    <label>Phone Number: {{phoneNumber}}</label><br>
+                    <label>Email: {{profile.email}}</label><br>
+                    <b-button type="is-primary is-light" outlined @click="edit" class="p-button-text">Edit</b-button>
+                    <b-button type="is-primary is-light" outlined @click="page = 'home'" class="p-button-text">Back</b-button>
+                </div>
+    
+                <div v-else-if="page === 'profile-edit'" class="profileEdit">
+                    <label>Name: <b-input type="text" v-model="profile.name" ></b-input></label><br>
+                    <label>Phone Number: {{phoneNumber}}</label><br>
+                    <label>Email: <b-input type="text" v-model="profile.email"></b-input></label><br>
+                    <b-button type="is-primary is-light" outlined @click="save" class="p-button-text">Save</b-button>
+                    <b-button type="is-primary is-light" outlined @click="cancel" class="p-button-text">Cancel</b-button>
+                    
+                    <!-- <button @click="save" class="btn btn-primary">Save</button>
+                    <button @click="cancel" class="btn btn-primary">Cancel</button> -->
+                </div>
+    
+                <div v-else-if="page === 'admin'" >
+                    Hello!
+                    <b-button type="is-primary is-light" outlined @click="show" class="p-button-text">Show Donations</b-button>
+
+                    <!-- <button @click="show" class="btn btn-primary">Show Donations</button> -->
                 </div>
             </div>
-
-            <div v-else-if="page === 'profile'" class="donate-form">
-                <label>Name: {{this.profile.name}}</label><br>
-                <label>Phone Number: {{this.phoneNumber}}</label><br>
-                <label>Email: {{this.profile.email}}</label><br>
-                <button @click="edit" class="btn btn-primary">Edit</button>
-                <button @click="this.page = 'home'" class="btn btn-primary">Back</button>
-            </div>
-
-            <div v-else-if="page === 'profile-edit'" class="donate-form">
-                <label>Name: <input type="text" v-model="profile.name"></label><br>
-                <label>Phone Number: {{this.phoneNumber}}</label><br>
-                <label>Email: <input type="text" v-model="profile.email"></label><br>
-                <button @click="save" class="btn btn-primary">Save</button>
-                <button @click="cancel" class="btn btn-primary">Cancel</button>
-            </div>
-
         </div>
-        <script src="https://unpkg.com/vue@3"></script>
+
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+        <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
         <script>
-            const FoodDonationApp =  Vue.createApp({
-                data(){
-                    return{
-                        page: 'login',
-                        header: "Food Donation",
-                        form:{    
-                            name: '' ,
-                            phoneNumber: '',
-                            addLine1: '',
-                            addLine2: '',
-                            servedFor: 0,
-                            foodTypeVeg: false,
-                            foodTypeNonVeg: false,
-                        },
-                        profile:{
-                            fname: '',
-                            lname: '',
-                            email: '',
-                        },
+            new Vue({
+                el: '#app',
+                data: {
+                    val: '',
+                    page: 'login',
+                    header: "Food Donation",
+                    form:{    
+                        name: '' ,
                         phoneNumber: '',
-                        otp: '',
-                        showItem: true,
-                        formClick: false,
-                        instance: null,
-                    }
+                        addLine1: '',
+                        addLine2: '',
+                        servedFor: 0,
+                        foodTypeVeg: false,
+                        foodTypeNonVeg: false,
+                    },
+                    profile:{
+                        fname: '',
+                        lname: '',
+                        email: '',
+                    },
+                    phoneNumber: '',
+                    otp: '',
+                    showItem: false,
+                    formClick: false,
+                    instance: null,
                 },
-                mounted(){
+                mounted: function(){
+                    console.log('mounted')
                     this.instance = axios.create({
                         baseURL: 'https://astra.free.beeceptor.com',
                         timeout: 30000,
@@ -102,9 +136,8 @@
                     if(this.phoneNumber){
                         this.page = 'home'
                     }
-
                 },
-                computed:{
+                computed: {
                     foodType(){
                         if(this.form.foodTypeVeg === true && this.form.foodTypeNonVeg === true){
                             return "Both"
@@ -117,11 +150,10 @@
                         }
                     }
                 },
-                methods: {
+                methods: {  
                     postNow(){
                         this.formClick = !this.formClick
-                        console.log(axios)
-                        
+                        console.log(axios) 
                         this.instance.post('/', {
                             name: this.form.name,
                             phoneNumber: this.form.phoneNumber,
@@ -137,11 +169,24 @@
                         console.log(this.form)
                     },
                     otpVerify(){
-                        if(this.otp == '123'){
-                            this.page = 'home' 
+                        if(this.otp === '123'){
+                            if(this.phoneNumber === '12345'){
+                                this.page = 'admin'
+                            }
+                            else{
+                                this.page = 'home'
+                            }
                         }
                         else{
-                            alert('OTP Incorrect')
+                            this.$buefy.dialog.alert({
+                                message: 'OTP Incorrect!',
+                                type: 'is-danger',
+                                hasIcon: true,
+                                icon: 'times-circle',
+                                iconPack: 'fa',
+                                ariaRole: 'alertdialog',
+                                ariaModal: true,
+                            })
                         }   
                     },
                     signOut(){
@@ -164,10 +209,13 @@
                         this.profile.name = ''
                         this.profile.email = ''
                         this.page = 'profile'
+                    },
+                    show(){
+
                     }
                 }
-            }).mount('#food-donation')
-           
+            })
         </script>
     </body>
 </html>
+
