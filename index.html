@@ -1,0 +1,119 @@
+<html>
+    <head>
+        <title>Food Donation</title>
+        <style>
+            .donate-form{
+                line-height: 40px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="food-donation">
+            <div v-if="page === 'login'">
+                {{page}}
+                <label><input type="number" v-model="phoneNumber" placeholder="Enter your phone number"></label><br>
+                <button @click="login" class="btn btn-primary">Login</button>
+                
+            </div>
+            <div v-else-if="page === 'otp'">
+                <label><input type="number" v-model="otp" placeholder="Enter OTP"></label><br>
+                <button @click="otpVerify" class="btn btn-primary">Verify</button>
+                <button @click="this.page = 'login'" class="btn btn-primary">Back</button>
+            </div>
+
+            <div v-else class="header">
+                <h1>{{header || 'Welcome'}}</h1><br>
+                <button @click="showItem = !showItem" class="btn btn-primary">{{showItem ? "Cancel" :"Donate"}}</button>
+
+                <div v-if="showItem" class="donate-form">
+                    <label>Name: <input type="text" v-model="name"></label><br>
+                    <label>Phone Number: <input type="number" v-model="phoneNumber"></label><br>
+                    <label>Address line 1: <input type="text" v-model="addLine1"></label><br>
+                    <label>Address line 2: <input type="text" v-model="addLine2"></label><br>
+                    <label>Served For: <input type="number" v-model="servedFor"></label><br>
+                    <label><input type="checkbox" v-model="foodTypeVeg">Veg</label>
+                    <label><input type="checkbox" v-model="foodTypeNonVeg">Non Veg</label><br>
+                    <button @click="postNow" class="btn btn-primary">Submit</button>
+                    <button @click="this.page = 'login'" class="btn btn-primary">Sign out</button><br>
+                    {{foodType}}{{page}}
+                    <!-- {{formClick}} -->
+                </div>
+            </div>
+        </div>
+        <script src="https://unpkg.com/vue@3"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script>
+            const FoodDonationApp =  Vue.createApp({
+                data(){
+                    return{
+                        page: 'login',
+                        header: "Food Donation",
+                        name: '' ,
+                        phoneNumber: '',
+                        addLine1: '',
+                        addLine2: '',
+                        servedFor: 0,
+                        foodTypeVeg: false,
+                        foodTypeNonVeg: false,
+                        otp: '',
+                        showItem: true,
+                        formClick: false,
+                        instance: null,
+                    }
+                },
+                mounted(){
+                    this.instance = axios.create({
+                        baseURL: 'https://astra.free.beeceptor.com',
+                        timeout: 30000,
+                        headers: {
+                            'Content-type': 'application/json',
+                        }
+                    });  
+                },
+                computed:{
+                    foodType(){
+                        if(this.foodTypeVeg === true && this.foodTypeNonVeg === true){
+                            return "Both"
+                        }
+                        else if(this.foodTypeNonVeg === true){
+                            return "Non Veg"
+                        }
+                        else if(this.foodTypeVeg === true){
+                            return "Veg"
+                        }
+                    }
+                },
+                methods: {
+                    postNow(){
+                        this.formClick = !this.formClick
+                        console.log(axios)
+                        
+                        this.instance.post('/', {
+                            name: this.name,
+                            phoneNumber: this.phoneNumber,
+                            addLine1: this.addLine1,
+                            addLine2: this.addLine2,
+                            servedFor: this.servedFor,
+                            foodType: this.foodType,
+                        })
+                    },
+                    login(){
+                        this.page = 'otp'
+                    },
+                    otpVerify(){
+                        if(this.otp == '123'){
+                            this.page = 'home'
+                        }
+                        else{
+                            alert('OTP Incorrect')
+                            s
+                        }
+                        
+                    }
+
+                }
+            }).mount('#food-donation')
+           
+        </script>
+    </body>
+</html>
