@@ -9,8 +9,12 @@
             .profile{
                 line-height: 20px;
             }
-            .donate-form, .profileEdit{
+            .donate-form{
+                line-height: 20px;
                 width: 25%;
+            }
+            .profileEdit{
+                width: 35%;
             }
         </style>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@5.8.55/css/materialdesignicons.min.css">
@@ -31,9 +35,9 @@
                 <b-field>
                     <b-input type="number" @keyup.native.enter="otpVerify" v-model="otp" placeholder="Enter OTP" style="width: 20%;"></b-input>
                 </b-field>     
-                {{phoneNumber}}
-                <b-button label="Verify" type="is-primary" size="is-medium" @click="otpVerify" />   
-                <b-button type="is-primary is-light" outlined @click="page = 'login'" class="p-button-text">Back</b-button>
+                <!-- {{phoneNumber}} -->
+                <b-button type="is-primary is-light" outlined @click="otpVerify">Verify</b-button>   
+                <b-button type="is-primary is-light" outlined @click="page = 'login'">Back</b-button>
             </div>
 
             <div v-else-if="page === 'home'" class="header">
@@ -46,33 +50,32 @@
                     <div class="card">
                         <div class="card-content">
                             <div class="content">        
-                                Name: <b-input type="text" v-model="form.name" ></b-input>
+                                Name: <b-input type="text" v-model="form.name" ></b-input><br>
                                 Phone Number: <b-input type="number" v-model="form.phoneNumber" ></b-input><br>
-                                Address Line 1: <b-input type="text" v-model="form.addLine1" ></b-input></div><br>
+                                Address Line 1: <b-input type="text" v-model="form.addLine1" ></b-input><br>
                                 Address Line 2: <b-input type="text" v-model="form.addLine2" ></b-input><br>
                                 Served For: <b-input type="number" v-model="form.servedFor" ></b-input><br>
                                 <b-checkbox v-model="form.foodTypeVeg">Veg</b-checkbox>
                                 <b-checkbox v-model="form.foodTypeNonVeg">Non Veg</b-checkbox><br><br>
-                                
                                 <b-button type="is-primary is-light" outlined @click="postNow" class="p-button-text">Submit</b-button>
-                                </div>
                             </div>
                         </div>
-                            
+                    </div>
+                </div>        
                     
                 </div>
                 <div v-else-if="page === 'profile'" class="profile">
                     <label>Name: {{profile.name}}</label><br>
                     <label>Phone Number: {{phoneNumber}}</label><br>
-                    <label>Email: {{profile.email}}</label><br>
+                    <label>Email: {{profile.email}}</label><br><br>
                     <b-button type="is-primary is-light" outlined @click="edit" class="p-button-text">Edit</b-button>
                     <b-button type="is-primary is-light" outlined @click="page = 'home'" class="p-button-text">Back</b-button>
                 </div>
     
                 <div v-else-if="page === 'profile-edit'" class="profileEdit">
-                    <label>Name: <b-input type="text" v-model="profile.name" ></b-input></label><br>
-                    <label>Phone Number: {{phoneNumber}}</label><br>
-                    <label>Email: <b-input type="text" v-model="profile.email"></b-input></label><br>
+                    <b-field label="Name: " horizontal><b-input type="text" v-model="profile.name" ></b-input></b-field><br>
+                    <b-field label="Phone Number: " horizontal> {{phoneNumber}}</b-field><br>
+                    <b-field label="Email: " horizontal><b-input type="text" v-model="profile.email"></b-input></b-field><br>
                     <b-button type="is-primary is-light" outlined @click="save" class="p-button-text">Save</b-button>
                     <b-button type="is-primary is-light" outlined @click="cancel" class="p-button-text">Cancel</b-button>
                     
@@ -82,8 +85,11 @@
     
                 <div v-else-if="page === 'admin'" >
                     Hello!
-                    <b-button type="is-primary is-light" outlined @click="show" class="p-button-text">Show Donations</b-button>
-
+                    <b-button type="is-primary is-light" outlined @click="signOut" class="p-button-text">Sign out</b-button><br><br>
+                    <b-button type="is-primary is-light" outlined @click="showDonation" class="p-button-text">Show Donations</b-button>
+                    <b-button type="is-primary is-light" outlined @click="showUser" class="p-button-text">User Details</b-button>
+                    <b-table :data="userDetails" :columns="userColumns" :sort-icon="sortIcon" :sort-icon-size="sortIconSize" v-if="showUserTable"></b-table>
+                    <b-table :data="donationDetails" :columns="donationColumns" :sort-icon="sortIcon" :sort-icon-size="sortIconSize" v-if="showDonationTable"></b-table>
                     <!-- <button @click="show" class="btn btn-primary">Show Donations</button> -->
                 </div>
             </div>
@@ -92,6 +98,7 @@
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
         <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
+        <script src="https://kit.fontawesome.com/bd90a56b74.js" crossorigin="anonymous"></script>
         <script>
             new Vue({
                 el: '#app',
@@ -107,17 +114,84 @@
                         servedFor: 0,
                         foodTypeVeg: false,
                         foodTypeNonVeg: false,
+                        foodtype: '',
+                        dateTime: '',
                     },
                     profile:{
-                        fname: '',
-                        lname: '',
+                        name: '',
                         email: '',
                     },
+                    donationDetails: [],
+                    donations: [],
+                    usersDetails: [],
+                    users: [],
                     phoneNumber: '',
                     otp: '',
                     showItem: false,
+                    showDonationTable: false,
+                    showUserTable: false,
                     formClick: false,
                     instance: null,
+                    sortIcon: 'arrow-up',
+                    sortIconSize: 'is-small',
+                    donationColumns: [
+                        {
+                        field: "name",
+                        label: "Name",
+                        sortable: true,
+                        },
+                        {
+                        field: "phoneNumber",
+                        label: "Phone Number",
+                        sortable: true,
+                        },
+                        {
+                        field: "addLine1",
+                        label: "Address Line 1",
+                        sortable: true,
+                        },
+                        {
+                        field: "addLine2",
+                        label: "Address Line 2",
+                        sortable: true,
+                        },
+                        {
+                        field: "servedFor",
+                        label: "Served For",
+                        sortable: true,
+                        },
+                        {
+                        field: "foodType",
+                        label: "Food Type",
+                        sortable: true,
+                        },
+                        {
+                        field: "dateTime",
+                        label: "Date/Time",
+                        sortable: true,
+                        }
+                    ],
+                    userColumns: [
+                        {
+                            field: "name",
+                            label: "Name",
+                            sortable: true,
+                        },
+                        {
+                            field: "phoneNumber",
+                            label: "Phone Number",
+                            sortable: true,
+                        },
+                        {
+                            field: "email",
+                            label: "Email",
+                            sortable: true,
+                        },
+                        {
+                            field: 'action',
+                            label: 'Action',
+                        }
+                    ],
                 },
                 mounted: function(){
                     console.log('mounted')
@@ -133,8 +207,11 @@
                     this.phoneNumber = localStorage.getItem("phoneNumber")
                     console.log(typeof(this.phoneNumber))
                     this.profile.email = localStorage.getItem("email")
-                    if(this.phoneNumber){
+                    if(this.phoneNumber != '12345'){
                         this.page = 'home'
+                    }
+                    else{
+                        this.page = 'admin'
                     }
                 },
                 computed: {
@@ -154,18 +231,36 @@
                     postNow(){
                         this.formClick = !this.formClick
                         console.log(axios) 
+
+                        this.form.dateTime = new Date().toLocaleString();
+                        console.log(this.form.dateTime)
+
                         this.instance.post('/', {
                             name: this.form.name,
                             phoneNumber: this.form.phoneNumber,
                             addLine1: this.form.addLine1,
                             addLine2: this.form.addLine2,
                             servedFor: this.form.servedFor,
-                            foodType: this.form.foodType,
+                            foodType: this.foodType,
+                            dateTime: this.form.dateTime,
                         })
+
+                        this.donations.push({
+                            name: this.form.name,
+                            phoneNumber: this.form.phoneNumber,
+                            addLine1: this.form.addLine1,
+                            addLine2: this.form.addLine2,
+                            servedFor: this.form.servedFor,
+                            foodType: this.foodType,
+                            dateTime: this.form.dateTime,
+                        })
+                        localStorage.setItem("donations", JSON.stringify(this.donations))
+
                     },
                     login(){
                         this.page = 'otp'
                         this.form.phoneNumber = this.phoneNumber
+                        localStorage.setItem("phoneNumber", this.phoneNumber)
                         console.log(this.form)
                     },
                     otpVerify(){
@@ -194,7 +289,18 @@
                         localStorage.removeItem("phoneNumber")
                         localStorage.removeItem("email")
                         this.phoneNumber = ''
-                        this.page = 'login'
+                        this.page = 'login'   
+                        this.form.name = '' 
+                        this.form.addLine1 = ''
+                        this.form.addLine2 = ''
+                        this.form.servedFor = 0
+                        this.form.foodTypeVeg = false
+                        this.form.foodTypeNonVeg = false
+                        this.form.foodtype = ''
+                        this.form.dateTime = ''
+                        this.otp = ''
+                        this.profile.name = ''
+                        this.profile.email = ''
                     },
                     edit(){
                         this.page = 'profile-edit'
@@ -202,16 +308,32 @@
                     save(){
                         this.page = 'profile'
                         localStorage.setItem("name", this.profile.name)
-                        localStorage.setItem("phoneNumber", this.phoneNumber)
                         localStorage.setItem("email", this.profile.email)
+                        
+                        this.users.push({
+                            name: this.profile.name,
+                            email: this.profile.email,
+                            phoneNumber: this.phoneNumber,
+                        })
+                        localStorage.setItem("users", JSON.stringify(this.users))
+                        console.log(this.userDetails)
                     },
                     cancel(){
                         this.profile.name = ''
                         this.profile.email = ''
                         this.page = 'profile'
                     },
-                    show(){
-
+                    showDonation(){
+                        this.showDonationTable = !this.showDonationTable
+                        this.showUserTable = false
+                        this.donationDetails = JSON.parse(localStorage.getItem("donations"))
+                        console.log(this.donationDetails)
+                    },
+                    showUser(){
+                        this.showUserTable = !this.showUserTable
+                        this.showDonationTable = false
+                        this.userDetails = JSON.parse(localStorage.getItem("users"))
+                        console.log(this.donation)    
                     }
                 }
             })
