@@ -1,0 +1,9 @@
+<link rel="stylesheet" href="lib/css/materialdesignicons.min.css">
+<link rel="stylesheet" href="lib/css/fontawesome.all.min.css">
+<link rel="stylesheet" href="lib/css/buefy.min.css">
+<link rel="stylesheet" href="lib/css/bulma.min.css">
+
+<script src="lib/js/axios.min.js"></script>
+<script src="lib/js/vue.js"></script>
+<script src="lib/js/buefy.min.js"></script>
+<script src="lib/js/fontawesome.js" crossorigin="anonymous"></script>

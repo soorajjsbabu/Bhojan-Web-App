@@ -134,7 +134,7 @@
                     },
                     donationDetails: [],
                     donations: [],
-                    usersDetails: [],
+                    userDetails: [],
                     users: [],
                     userStringified: [],
                     phoneNumber: '',
@@ -216,7 +216,8 @@
                 mounted: function(){
                     console.log('mounted')
                     this.instance = axios.create({
-                        baseURL: 'https://astra.free.beeceptor.com',
+                        // baseURL: 'https://astra.free.beeceptor.com',
+                        baseURL: 'http://127.0.0.1:5000',
                         timeout: 30000,
                         headers: {
                             'Content-type': 'application/json',
@@ -258,15 +259,14 @@
                         this.form.dateTime = new Date().toLocaleString();
                         console.log(this.form.dateTime)
 
-                        // this.instance.post('/', {
-                        //     name: this.form.name,
-                        //     phoneNumber: this.form.phoneNumber,
-                        //     addLine1: this.form.addLine1,
-                        //     addLine2: this.form.addLine2,
-                        //     servedFor: this.form.servedFor,
-                        //     foodType: this.foodType,
-                        //     dateTime: this.form.dateTime,
-                        // })
+                        this.instance.post('/add_donation', {
+                            name: this.form.name,
+                            phoneNumber: this.form.phoneNumber,
+                            addLine1: this.form.addLine1,
+                            addLine2: this.form.addLine2,
+                            servedFor: this.form.servedFor,
+                            foodType: this.foodType,
+                        })
 
                         this.donations.push({
                             name: this.form.name,
@@ -349,12 +349,18 @@
                     },
                     save(){
                         this.page = 'profile'
-                        this.usersDetails.push({
+                        this.userDetails.push({
                             name: this.profile.name,
                             email: this.profile.email,
                             phoneNumber: this.phoneNumber,
                         })
-                        localStorage.setItem("usersDetails", JSON.stringify(this.usersDetails))
+                        this.instance.post('/add_user', {
+                            name: this.profile.name,
+                            email: this.profile.email,
+                            phoneNumber: this.phoneNumber,
+                        })
+
+                        localStorage.setItem("userDetails", JSON.stringify(this.userDetails))
                         console.log(this.userDetails)
                     },
                     cancel(){
@@ -365,25 +371,33 @@
                     showDonation(){
                         this.showDonationTable = !this.showDonationTable
                         this.showUserTable = false
-                        this.donationDetails = JSON.parse(localStorage.getItem("donations"))
-                        console.log(this.donationDetails)
+                        // this.donationDetails = JSON.parse(localStorage.getItem("donations"))
+                        this.instance.get('/donations')
+                        .then((response) => {
+                            this.donationDetails = response.data.donations
+                            console.log(response)
+                        })
                     },
                     showUser(){
                         this.showUserTable = !this.showUserTable
                         this.showDonationTable = false
-                        this.userDetails = JSON.parse(localStorage.getItem("usersDetails"))
-                        for(var i = 0; i < this.userDetails.length; i++){
-                            this.userDetails[i]['edit'] = '<i class="fa-solid fa-pencil"></i>';
-                            this.userDetails[i]['delete'] = '<i class="fa-solid fa-trash"></i>';
-                            console.log(this.userDetails[i])
-                        }
-                        console.log(this.donation)    
+                        // this.userDetails = JSON.parse(localStorage.getItem("userDetails"))
+                        this.instance.get('/users')
+                        .then((response) => {
+                            console.log(response)
+                            this.userDetails = response.data.users
+                            for(var i = 0; i < this.userDetails.length; i++){
+                                this.userDetails[i]['edit'] = '<i class="fa-solid fa-pencil"></i>';
+                                this.userDetails[i]['delete'] = '<i class="fa-solid fa-trash"></i>';
+                                console.log(this.userDetails[i])
+                            }
+                        })   
                     },
                     deleteUser(rowIndex){
                         this.$buefy.toast.open('Account deleted!')
                         this.userDetails.splice(rowIndex, 1)
                         // console.log(this.userDetails)
-                        localStorage.setItem("usersDetails", JSON.stringify(this.userDetails))
+                        localStorage.setItem("userDetails", JSON.stringify(this.userDetails))
                     },
                     handleCellClick(row, col, rowIndex, colIndex){
                         console.log("handleCellClick >")
