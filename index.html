@@ -14,7 +14,11 @@
                 width: 25%;
             }
             .profileEdit{
-                width: 35%;
+                margin-right: 50%;
+                margin-left: 10px;
+            }
+            .textBox{
+                width: 40%;
             }
         </style>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@5.8.55/css/materialdesignicons.min.css">
@@ -28,23 +32,22 @@
                 <b-field>
                     <b-input type="number" @keyup.native.enter="login" v-model="phoneNumber" style="width: 20%;" placeholder="Enter your phone number"></b-input>
                 </b-field>    
-                <b-button type="is-primary is-light" outlined @click="login" class="p-button-text">Login</b-button>
-                
+                <b-button type="is-primary" outlined @click="login" class="p-button-text">Login</b-button>
             </div>
+
             <div v-else-if="page === 'otp'">
                 <b-field>
                     <b-input type="number" @keyup.native.enter="otpVerify" v-model="otp" placeholder="Enter OTP" style="width: 20%;"></b-input>
-                </b-field>     
-                <!-- {{phoneNumber}} -->
-                <b-button type="is-primary is-light" outlined @click="otpVerify">Verify</b-button>   
-                <b-button type="is-primary is-light" outlined @click="page = 'login'">Back</b-button>
+                </b-field>
+                <b-button type="is-primary " outlined @click="otpVerify">Verify</b-button>   
+                <b-button type="is-primary " outlined @click="page = 'login'">Back</b-button>
             </div>
 
             <div v-else-if="page === 'home'" class="header">
                 <h1>{{header}}</h1>
-                <b-button type="is-primary is-light" outlined @click="page = 'profile'" class="p-button-text">Profile</b-button>
-                <b-button type="is-primary is-light" outlined @click="signOut" class="p-button-text">Sign out</b-button><br><br>
-                <b-button type="is-primary is-light" rounded outlined @click="showItem = !showItem" class="btn btn-primary">{{showItem ? "Cancel" :"Donate"}}</b-button>
+                <b-button type="is-primary " outlined @click="page = 'profile'" class="p-button-text">Profile</b-button>
+                <b-button type="is-primary " outlined @click="signOut" class="p-button-text">Sign out</b-button><br><br>
+                <b-button type="is-primary " rounded outlined @click="showItem = !showItem" class="btn btn-primary">{{showItem ? "Cancel" :"Donate"}}</b-button>
 
                 <div v-if="showItem" class="donate-form">
                     <div class="card">
@@ -57,41 +60,49 @@
                                 Served For: <b-input type="number" v-model="form.servedFor" ></b-input><br>
                                 <b-checkbox v-model="form.foodTypeVeg">Veg</b-checkbox>
                                 <b-checkbox v-model="form.foodTypeNonVeg">Non Veg</b-checkbox><br><br>
-                                <b-button type="is-primary is-light" outlined @click="postNow" class="p-button-text">Submit</b-button>
+                                <b-button type="is-primary " outlined @click="postNow" class="p-button-text">Submit</b-button>
                             </div>
                         </div>
                     </div>
-                </div>        
-                    
-                </div>
-                <div v-else-if="page === 'profile'" class="profile">
-                    <label>Name: {{profile.name}}</label><br>
-                    <label>Phone Number: {{phoneNumber}}</label><br>
-                    <label>Email: {{profile.email}}</label><br><br>
-                    <b-button type="is-primary is-light" outlined @click="edit" class="p-button-text">Edit</b-button>
-                    <b-button type="is-primary is-light" outlined @click="page = 'home'" class="p-button-text">Back</b-button>
-                </div>
-    
-                <div v-else-if="page === 'profile-edit'" class="profileEdit">
-                    <b-field label="Name: " horizontal><b-input type="text" v-model="profile.name" ></b-input></b-field><br>
-                    <b-field label="Phone Number: " horizontal> {{phoneNumber}}</b-field><br>
-                    <b-field label="Email: " horizontal><b-input type="text" v-model="profile.email"></b-input></b-field><br>
-                    <b-button type="is-primary is-light" outlined @click="save" class="p-button-text">Save</b-button>
-                    <b-button type="is-primary is-light" outlined @click="cancel" class="p-button-text">Cancel</b-button>
-                    
-                    <!-- <button @click="save" class="btn btn-primary">Save</button>
-                    <button @click="cancel" class="btn btn-primary">Cancel</button> -->
-                </div>
-    
-                <div v-else-if="page === 'admin'" >
-                    Hello!
-                    <b-button type="is-primary is-light" outlined @click="signOut" class="p-button-text">Sign out</b-button><br><br>
-                    <b-button type="is-primary is-light" outlined @click="showDonation" class="p-button-text">Show Donations</b-button>
-                    <b-button type="is-primary is-light" outlined @click="showUser" class="p-button-text">User Details</b-button>
-                    <b-table :data="userDetails" :columns="userColumns" :sort-icon="sortIcon" :sort-icon-size="sortIconSize" v-if="showUserTable"></b-table>
-                    <b-table :data="donationDetails" :columns="donationColumns" :sort-icon="sortIcon" :sort-icon-size="sortIconSize" v-if="showDonationTable"></b-table>
-                    <!-- <button @click="show" class="btn btn-primary">Show Donations</button> -->
-                </div>
+                </div>            
+            </div>
+
+            <div v-else-if="page === 'profile'" class="profile">
+                <label>Phone Number: {{phoneNumber}}</label><br>
+                <label>Name: {{profile.name}}</label><br>
+                <label>Email: {{profile.email}}</label><br><br>
+                <b-button type="is-primary " outlined @click="edit" class="p-button-text">Edit</b-button>
+                <b-button type="is-primary " outlined @click="page = 'home'" class="p-button-text">Back</b-button>
+            </div>
+
+            <div v-else-if="page === 'profile-edit'" class="profileEdit">
+                <b-field label="Phone Number: " horizontal> {{phoneNumber}}</b-field><br>
+                <b-field label="Name: " horizontal><b-input type="text" class="textBox" v-model="profile.name"></b-input></b-field><br>
+                <b-field label="Email: " horizontal><b-input type="Email" class="textBox" v-model="profile.email"></b-input></b-field><br>
+                <b-button type="is-primary " outlined @click="save" class="p-button-text">Save</b-button>
+                <b-button type="is-primary " outlined @click="cancel" class="p-button-text">Cancel</b-button>
+            </div>
+
+            <div v-else-if="page === 'admin'" >
+                <h1>Admin Page</h1>
+                <b-button type="is-primary " outlined @click="signOut" class="p-button-text">Sign out</b-button><br><br>
+                <b-button type="is-primary " outlined @click="showDonation" class="p-button-text">Show Donations</b-button>
+                <b-button type="is-primary " outlined @click="showUser" class="p-button-text">User Details</b-button>
+                <b-table :data="userDetails" 
+                :columns="userColumns" 
+                :sort-icon="sortIcon" 
+                :sort-icon-size="sortIconSize" @cellclick="handleCellClick" v-if="showUserTable">
+                </b-table>
+                <b-table :data="donationDetails" :columns="donationColumns" :sort-icon="sortIcon" :sort-icon-size="sortIconSize" v-if="showDonationTable"></b-table>
+                <b-modal
+                v-model="showModal"
+                has-modal-card
+                trap-focus
+                :destroy-on-hide="false"
+                aria-role="dialog"
+                aria-label="Example Modal"
+                close-button-aria-label="Close"
+                aria-modal></b-modal>
             </div>
         </div>
 
@@ -125,11 +136,13 @@
                     donations: [],
                     usersDetails: [],
                     users: [],
+                    userStringified: [],
                     phoneNumber: '',
                     otp: '',
                     showItem: false,
                     showDonationTable: false,
                     showUserTable: false,
+                    showModal: false,
                     formClick: false,
                     instance: null,
                     sortIcon: 'arrow-up',
@@ -176,20 +189,27 @@
                             field: "name",
                             label: "Name",
                             sortable: true,
+                            width: '30%',
                         },
                         {
                             field: "phoneNumber",
                             label: "Phone Number",
                             sortable: true,
+                            width: '20%',
                         },
                         {
                             field: "email",
                             label: "Email",
                             sortable: true,
+                            width: '40%',
                         },
                         {
-                            field: 'action',
-                            label: 'Action',
+                            field: 'edit',
+                            width: '5%',
+                        },
+                        {
+                            field: 'delete',
+                            width: '5%',
                         }
                     ],
                 },
@@ -205,13 +225,16 @@
                     
                     this.profile.name = localStorage.getItem("name")
                     this.phoneNumber = localStorage.getItem("phoneNumber")
-                    console.log(typeof(this.phoneNumber))
                     this.profile.email = localStorage.getItem("email")
-                    if(this.phoneNumber != '12345'){
-                        this.page = 'home'
-                    }
-                    else{
+                    console.log(this.phoneNumber)
+                    if(this.phoneNumber === '12345'){
                         this.page = 'admin'
+                    }
+                    else if(this.phoneNumber === '' || this.phoneNumber === null){
+                        this.page = 'login'
+                    }
+                    else if(this.phoneNumber !== ''){
+                        this.page = 'home'
                     }
                 },
                 computed: {
@@ -235,15 +258,15 @@
                         this.form.dateTime = new Date().toLocaleString();
                         console.log(this.form.dateTime)
 
-                        this.instance.post('/', {
-                            name: this.form.name,
-                            phoneNumber: this.form.phoneNumber,
-                            addLine1: this.form.addLine1,
-                            addLine2: this.form.addLine2,
-                            servedFor: this.form.servedFor,
-                            foodType: this.foodType,
-                            dateTime: this.form.dateTime,
-                        })
+                        // this.instance.post('/', {
+                        //     name: this.form.name,
+                        //     phoneNumber: this.form.phoneNumber,
+                        //     addLine1: this.form.addLine1,
+                        //     addLine2: this.form.addLine2,
+                        //     servedFor: this.form.servedFor,
+                        //     foodType: this.foodType,
+                        //     dateTime: this.form.dateTime,
+                        // })
 
                         this.donations.push({
                             name: this.form.name,
@@ -256,21 +279,42 @@
                         })
                         localStorage.setItem("donations", JSON.stringify(this.donations))
 
+                        this.$buefy.dialog.alert({
+                            message: 'Form Submitted successfully!',
+                            type: 'is-primary',
+                            confirmText: 'You\'ve made someone happy : )',
+                        })
                     },
                     login(){
-                        this.page = 'otp'
-                        this.form.phoneNumber = this.phoneNumber
-                        localStorage.setItem("phoneNumber", this.phoneNumber)
-                        console.log(this.form)
+                        if(this.phoneNumber === ''){
+                            this.$buefy.dialog.alert({
+                                message: 'Enter a phone number!',
+                                type: 'is-danger',
+                                hasIcon: true,
+                                icon: 'times-circle',
+                                iconPack: 'fa',
+                                ariaRole: 'alertdialog',
+                                ariaModal: true,
+                            })
+                        }
+                        else{
+                            this.page = 'otp'
+                            this.form.phoneNumber = this.phoneNumber
+                            
+                            console.log(this.form)
+                        }
                     },
                     otpVerify(){
                         if(this.otp === '123'){
                             if(this.phoneNumber === '12345'){
-                                this.page = 'admin'
+                                this.page = 'admin'   
+                                this.showDonationTable = false
+                                this.showUserTable = false
                             }
                             else{
                                 this.page = 'home'
                             }
+                            localStorage.setItem("phoneNumber", this.phoneNumber)
                         }
                         else{
                             this.$buefy.dialog.alert({
@@ -285,9 +329,7 @@
                         }   
                     },
                     signOut(){
-                        localStorage.removeItem("name")
                         localStorage.removeItem("phoneNumber")
-                        localStorage.removeItem("email")
                         this.phoneNumber = ''
                         this.page = 'login'   
                         this.form.name = '' 
@@ -307,15 +349,12 @@
                     },
                     save(){
                         this.page = 'profile'
-                        localStorage.setItem("name", this.profile.name)
-                        localStorage.setItem("email", this.profile.email)
-                        
-                        this.users.push({
+                        this.usersDetails.push({
                             name: this.profile.name,
                             email: this.profile.email,
                             phoneNumber: this.phoneNumber,
                         })
-                        localStorage.setItem("users", JSON.stringify(this.users))
+                        localStorage.setItem("usersDetails", JSON.stringify(this.usersDetails))
                         console.log(this.userDetails)
                     },
                     cancel(){
@@ -332,12 +371,44 @@
                     showUser(){
                         this.showUserTable = !this.showUserTable
                         this.showDonationTable = false
-                        this.userDetails = JSON.parse(localStorage.getItem("users"))
+                        this.userDetails = JSON.parse(localStorage.getItem("usersDetails"))
+                        for(var i = 0; i < this.userDetails.length; i++){
+                            this.userDetails[i]['edit'] = '<i class="fa-solid fa-pencil"></i>';
+                            this.userDetails[i]['delete'] = '<i class="fa-solid fa-trash"></i>';
+                            console.log(this.userDetails[i])
+                        }
                         console.log(this.donation)    
+                    },
+                    deleteUser(rowIndex){
+                        this.$buefy.toast.open('Account deleted!')
+                        this.userDetails.splice(rowIndex, 1)
+                        // console.log(this.userDetails)
+                        localStorage.setItem("usersDetails", JSON.stringify(this.userDetails))
+                    },
+                    handleCellClick(row, col, rowIndex, colIndex){
+                        console.log("handleCellClick >")
+                        console.log(row)
+                        console.log(col)
+                        console.log(rowIndex)
+                        console.log(colIndex)
+                        if(colIndex === 4){
+                            // console.log('delete')
+                            this.$buefy.dialog.confirm({
+                                title: 'Delete account',
+                                message: 'Are you sure you want to <b>delete</b> this account? This action cannot be undone.',
+                                confirmText: 'Delete Account',
+                                type: 'is-danger',
+                                hasIcon: true,
+                                onConfirm: () => this.deleteUser(rowIndex)
+                            })
+                        }
+                        if(colIndex === 3){
+                            this.showModal = true
+                            console.log('edit')
+                        }
                     }
                 }
             })
         </script>
     </body>
 </html>
-
