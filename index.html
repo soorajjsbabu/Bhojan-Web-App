@@ -21,10 +21,14 @@
                 width: 40%;
             }
         </style>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@5.8.55/css/materialdesignicons.min.css">
+        <link rel="stylesheet" href="lib/css/materialdesignicons.min.css">
+        <link rel="stylesheet" href="lib/css/all.min.css">
+        <link rel="stylesheet" href="lib/css/buefy.min.css">
+        <link rel="stylesheet" href="lib/css/bulma.min.css">
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@5.8.55/css/materialdesignicons.min.css">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css">
         <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"> -->
     </head>
     <body>
         <div id="app">
@@ -94,22 +98,26 @@
                 :sort-icon-size="sortIconSize" @cellclick="handleCellClick" v-if="showUserTable">
                 </b-table>
                 <b-table :data="donationDetails" :columns="donationColumns" :sort-icon="sortIcon" :sort-icon-size="sortIconSize" v-if="showDonationTable"></b-table>
-                <b-modal
-                v-model="showModal"
-                has-modal-card
-                trap-focus
-                :destroy-on-hide="false"
-                aria-role="dialog"
-                aria-label="Example Modal"
-                close-button-aria-label="Close"
-                aria-modal></b-modal>
+            </div>
+
+            <div v-else-if="page === 'admin-profile-edit'" class="profileEdit">
+                <b-field label="Phone Number: " horizontal><b-input type="text" class="textBox" v-model="phoneNumber"></b-field><br>
+                <b-field label="Name: " horizontal><b-input type="text" class="textBox" v-model="profile.name"></b-input></b-field><br>
+                <b-field label="Email: " horizontal><b-input type="Email" class="textBox" v-model="profile.email"></b-input></b-field><br>
+                <b-button type="is-primary " outlined @click="update" class="p-button-text">Update</b-button>
+                <b-button type="is-primary " outlined @click="page = 'admin'" class="p-button-text">Cancel</b-button>
             </div>
         </div>
 
-        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script src="lib/js/axios.min.js"></script>
+        <script src="lib/js/vue.js"></script>
+        <script src="lib/js/buefy.min.js"></script>
+        <script src="lib/fontawesome/js/all.min.js" ></script>
+
+        <!-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
         <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
-        <script src="https://kit.fontawesome.com/bd90a56b74.js" crossorigin="anonymous"></script>
+        <script src="https://kit.fontawesome.com/bd90a56b74.js" crossorigin="anonymous"></script> -->
         <script>
             new Vue({
                 el: '#app',
@@ -132,6 +140,11 @@
                         name: '',
                         email: '',
                     },
+                    userRow:{
+                        name: '',
+                        phoneNumber: '',
+                        email: '',
+                    },
                     donationDetails: [],
                     donations: [],
                     userDetails: [],
@@ -142,7 +155,7 @@
                     showItem: false,
                     showDonationTable: false,
                     showUserTable: false,
-                    showModal: false,
+                    // showModal: false,
                     formClick: false,
                     instance: null,
                     sortIcon: 'arrow-up',
@@ -284,6 +297,7 @@
                             type: 'is-primary',
                             confirmText: 'You\'ve made someone happy : )',
                         })
+                        this.showItem = false
                     },
                     login(){
                         if(this.phoneNumber === ''){
@@ -363,6 +377,21 @@
                         localStorage.setItem("userDetails", JSON.stringify(this.userDetails))
                         console.log(this.userDetails)
                     },
+                    update(){
+                        this.page = 'admin'
+                        this.userDetails.push({
+                            name: this.profile.name,
+                            email: this.profile.email,
+                            phoneNumber: this.phoneNumber,
+                        })
+                        this.instance.post('/add_user', {
+                            name: this.profile.name,
+                            email: this.profile.email,
+                            phoneNumber: this.phoneNumber,
+                        })
+                        this.$buefy.toast.open('User details updated!')
+                        this.userDetails.splice(rowIndex, 1)
+                    },
                     cancel(){
                         this.profile.name = ''
                         this.profile.email = ''
@@ -375,6 +404,9 @@
                         this.instance.get('/donations')
                         .then((response) => {
                             this.donationDetails = response.data.donations
+                            for(var i=0;i<this.donationDetails.length;i++){
+                                this.donationDetails[i]['dateTime'] = new Date(this.donationDetails[i]['dateTime']).toLocaleString('en-IN',{dateStyle:"long",timeStyle:"medium"})
+                            }
                             console.log(response)
                         })
                     },
@@ -387,17 +419,103 @@
                             console.log(response)
                             this.userDetails = response.data.users
                             for(var i = 0; i < this.userDetails.length; i++){
-                                this.userDetails[i]['edit'] = '<i class="fa-solid fa-pencil"></i>';
-                                this.userDetails[i]['delete'] = '<i class="fa-solid fa-trash"></i>';
+                                this.userDetails[i]['edit'] = '<img src=lib/edit.svg>';
+                                this.userDetails[i]['delete'] = '<img src=lib/delete.svg>';
                                 console.log(this.userDetails[i])
                             }
                         })   
                     },
+                    editUser(rowIndex){
+                        const ModalForm = {
+                            props: ['name', 'phoneNumber', 'email', 'rowIndex'],
+                            data(){
+                                return {
+                                    newName: this.name,
+                                    newEmail: this.email,
+                                }
+                            } ,
+                            template: `
+                                <form action="">
+                                    <div class="modal-card" style="width: auto">
+                                        <header class="modal-card-head">
+                                            <p class="modal-card-title">Login</p>
+                                            <button
+                                                type="button"
+                                                class="delete"
+                                                @click="$emit('close')"/>
+                                        </header>
+                                        <section class="modal-card-body">
+                                            <b-field label="Name">
+                                                <b-input
+                                                    type="text"
+                                                    v-model="newName"
+                                                    required>
+                                                </b-input>
+                                            </b-field>
+
+                                            <b-field label="Email">
+                                                <b-input
+                                                    type="email"
+                                                    v-model="newEmail"
+                                                    required>
+                                                </b-input>
+                                            </b-field>
+
+                                            <b-field label="Phone Number">
+                                                <b-input
+                                                    type="number"
+                                                    :value="phoneNumber"
+                                                    required 
+                                                    disabled>
+                                                </b-input>
+                                            </b-field>
+                                        </section>
+                                        <footer class="modal-card-foot">
+                                            <b-button
+                                                label="Close"
+                                                @click="$emit('close')" />
+                                            <b-button
+                                                label="Update"
+                                                type="is-primary"
+                                                @click="$emit('update', {name: newName, phoneNumber: phoneNumber, email: newEmail, rowIndex: rowIndex});$emit('close')" />
+                                        </footer>
+                                    </div>
+                                </form>
+                            `
+                        }
+                        this.$buefy.modal.open({
+                            parent: this,
+                            component: ModalForm,
+                            hasModalCard: true,
+                            props: {
+                                'name': this.userDetails[rowIndex]['name'], 
+                                'phoneNumber':this.userDetails[rowIndex]['phoneNumber'], 
+                                'email':this.userDetails[rowIndex]['email'],
+                                'rowIndex': rowIndex
+                            },
+                            events: {
+                                update: this.updateUser
+                            },
+                            customClass: 'custom-class custom-class-2',
+                            trapFocus: true
+                        })
+                        console.log(this.userDetails[rowIndex])
+                    },
+                    updateUser(event){
+                        const rowIndex = event.rowIndex
+                        delete event.rowIndex
+                        this.instance.put('/update_user', event)
+                        event.edit = '<img src=lib/edit.svg>'
+                        event.delete = '<img src=lib/delete.svg>'
+                        this.userDetails.splice(rowIndex, 1, event)
+                        console.log('Triggered')
+                        console.log(event)
+                    },
                     deleteUser(rowIndex){
                         this.$buefy.toast.open('Account deleted!')
+                        this.instance.delete('/delete_user/'+this.userDetails[rowIndex]['phoneNumber'])
                         this.userDetails.splice(rowIndex, 1)
                         // console.log(this.userDetails)
-                        localStorage.setItem("userDetails", JSON.stringify(this.userDetails))
                     },
                     handleCellClick(row, col, rowIndex, colIndex){
                         console.log("handleCellClick >")
@@ -417,7 +535,8 @@
                             })
                         }
                         if(colIndex === 3){
-                            this.showModal = true
+                            // this.showModal = true
+                            this.editUser(rowIndex)
                             console.log('edit')
                         }
                     }

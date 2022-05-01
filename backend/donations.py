@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from . import db 
 from .models import User, Donation
+from sqlalchemy import update
 
 main = Blueprint('main', __name__)
 
@@ -11,6 +12,25 @@ def add_user():
     new_user = User(phoneNumber=user_data['phoneNumber'], name=user_data['name'], email=user_data['email'])
 
     db.session.add(new_user)
+    db.session.commit()
+
+    return 'Done', 201
+
+@main.route('/update_user', methods=['PUT'])
+def update_user():
+    user_data = request.get_json()
+    print(user_data)
+    db.session.query(User).\
+       filter(User.phoneNumber == user_data['phoneNumber']).\
+       update({"name":user_data['name'], "email":user_data['email']})
+    db.session.commit()
+
+    return 'Done', 201
+
+@main.route('/delete_user/<phoneNumber>', methods=['DELETE'])
+def delete_user(phoneNumber):
+    db.session.query(User).\
+       filter(User.phoneNumber == phoneNumber).delete()
     db.session.commit()
 
     return 'Done', 201
