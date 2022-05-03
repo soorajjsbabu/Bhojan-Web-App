@@ -1,30 +1,6 @@
 <html>
     <head>
         <title>Food Donation</title>
-        <style>
-            #app{
-                margin-top: 5%;
-                margin-left: 1%;
-            }
-            .profile{
-                line-height: 20px;
-                margin-right: 80%;
-            }
-            .donate-form{
-                line-height: 20px;
-                width: 25%;
-            }
-            b-input{
-                width: 10%
-            }
-            .profileEdit{
-                margin-right: 50%;
-                margin-left: 10px;
-            }
-            .textBox{
-                width: 40%;
-            }
-        </style>
         <link rel="stylesheet" href="lib/css/materialdesignicons.min.css">
         <link rel="stylesheet" href="lib/css/all.min.css">
         <link rel="stylesheet" href="lib/css/buefy.min.css">
@@ -36,99 +12,134 @@
     </head>
     <body>
         <div id="app">
-            <div v-if="page === 'login'">
-                <b-field>
-                    <b-input type="number" @keyup.native.enter="login" v-model="phoneNumber" style="width: 20%;" placeholder="Enter your phone number"></b-input>
-                </b-field>    
-                <b-button type="is-primary" outlined @click="login" class="p-button-text">Login</b-button>
+            
+            <div v-if="page === 'login'" class="hero has-text-centered">
+                <h1 class="title is-1 pt-3">Login</h1>
+                <div class="hero-body columns">
+                    <div class="column"></div>
+                    <div class="column is-quarter">
+                        <b-field label="Phone Number" :label-position="labelPosition">
+                            <b-input type="number" @keyup.native.enter="login" v-model="phoneNumber" placeholder="Enter your phone number" required class="mt-2"></b-input>
+                        </b-field>
+                        <b-button type="is-primary" outlined @click="login" class="p-button-text">Login</b-button>
+                    </div>
+                    <div class="column"></div>
+                </div>
             </div>
 
-            <div v-else-if="page === 'otp'">
-                <b-field>
-                    <b-input type="number" @keyup.native.enter="otpVerify" v-model="otp" placeholder="Enter OTP" style="width: 20%;"></b-input>
-                </b-field>
-                <b-button type="is-primary " outlined @click="otpVerify">Verify</b-button>   
-                <b-button type="is-primary " outlined @click="page = 'login'">Back</b-button>
+            <div v-else-if="page === 'otp'" class="hero has-text-centered">
+                <h1 class="title is-1 pt-3">OTP</h1>
+                <div class="hero-body columns">
+                    <div class="column"></div>
+                    <div class="column is-quarter">
+                        <b-field label="OTP" :label-position="labelPosition">
+                            <b-input type="number" @keyup.native.enter="otpVerify" v-model="otp" placeholder="Enter OTP" required class="mt-2"></b-input>
+                        </b-field>
+                        <b-button type="is-primary " outlined @click="otpVerify">Verify</b-button>   
+                        <b-button type="is-primary " outlined @click="page = 'login'">Back</b-button>
+                    </div>
+                    <div class="column"></div>
+                </div>
             </div>
 
-            <div v-else-if="page === 'home'" class="header">
-                <h1>{{header}}</h1>
-                <b-button type="is-primary " outlined @click="showProfile" class="p-button-text">Profile</b-button>
-                <b-button type="is-primary " outlined @click="signOut" class="p-button-text">Sign out</b-button><br><br>
-                <b-button type="is-primary " rounded outlined @click="showItem = !showItem" class="btn btn-primary">{{showItem ? "Cancel" :"Donate"}}</b-button>
+            <div v-else-if="page === 'home'" class="hero has-text-centered">
+                <h1 class="title is-1 pt-3">{{header}}</h1>
+                <div class="hero-body columns">
+                    
+                    <div class="column"></div>
+                    <div class="column is-one-thirds">
+                        <b-button type="is-primary " outlined @click="showProfile" class="p-button-text mt-3">Profile</b-button>
+                        <b-button type="is-primary " outlined @click="signOut" class="p-button-text mt-3">Sign out</b-button><br>
+                        <b-button type="is-primary " rounded outlined @click="showItem = !showItem" class="btn btn-primary mt-3">{{showItem ? "Cancel" :"Donate"}}</b-button>
 
-                <div v-if="showItem" class="donate-form">
-                    <div class="card">
-                        <div class="card-content">
-                            <div class="content">     
-                                <b-field label="Name" :label-position="labelPosition">
-                                    <b-input type="text" v-model="form.name" ></b-input>
-                                </b-field><br>
-                                <b-field label="Phone Number" :label-position="labelPosition">
-                                    <b-input type="number" v-model="form.phoneNumber" ></b-input>
-                                </b-field><br>
-                                <b-field label="Address Line 1" :label-position="labelPosition">
-                                    <b-input type="text" v-model="form.addLine1" ></b-input>
-                                </b-field><br>
-                                <b-field label="Address Line 2" :label-position="labelPosition">
-                                    <b-input type="text" v-model="form.addLine2" ></b-input>
-                                </b-field><br>
-                                <b-field label="Served For" :label-position="labelPosition">
-                                    <b-input type="number" v-model="form.servedFor" ></b-input>
-                                </b-field><br>
-                                
-                                <b-checkbox v-model="form.foodTypeVeg">Veg</b-checkbox>
-                                <b-checkbox v-model="form.foodTypeNonVeg">Non Veg</b-checkbox><br><br>
-                                <b-button type="is-primary " outlined @click="postNow" class="p-button-text">Submit</b-button>
+                        <div v-if="showItem">
+                            <div class="card">
+                                <div class="card-content">
+                                    <div class="content">     
+                                        <b-field label="Name" :label-position="labelPosition">
+                                            <b-input type="text" v-model="form.name" required class="mt-2"></b-input>
+                                        </b-field>
+                                        <b-field label="Phone Number" :label-position="labelPosition">
+                                            <b-input type="number" v-model="form.phoneNumber" class="mt-4" required ></b-input>
+                                        </b-field>
+                                        <b-field label="Address Line 1" :label-position="labelPosition">
+                                            <b-input type="text" v-model="form.addLine1" required></b-input>
+                                        </b-field>
+                                        <b-field label="Address Line 2" :label-position="labelPosition">
+                                            <b-input type="text" v-model="form.addLine2" required></b-input>
+                                        </b-field>
+                                        <b-field label="Served For" :label-position="labelPosition">
+                                            <b-input type="number" v-model="form.servedFor" required></b-input>
+                                        </b-field>
+                                        <b-checkbox v-model="form.foodTypeVeg">Veg</b-checkbox>
+                                        <b-checkbox v-model="form.foodTypeNonVeg">Non Veg</b-checkbox><br><br>
+                                        <b-button type="is-primary " outlined @click="postNow" class="p-button-text">Submit</b-button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>            
+                    <div class="column"></div>  
+                </div>
             </div>
 
-            <div v-else-if="page === 'profile'" class="profile">
-                <b-field label="Phone Number" :label-position="labelPosition">
-                    <b-input type="text" native-size="10" v-model="phoneNumber" disabled></b-input>
-                </b-field><br>
-                <b-field label="Name" :label-position="labelPosition">
-                    <b-input type="text" v-model="profile.name" disabled></b-input>
-                </b-field><br>
-                <b-field label="Email" :label-position="labelPosition">
-                    <b-input type="text" v-model="profile.email" disabled></b-input>
-                </b-field><br>
-                <b-button type="is-primary " outlined @click="edit" class="p-button-text">Edit</b-button>
-                <b-button type="is-primary " outlined @click="page = 'home'" class="p-button-text">Back</b-button>
+            <div v-else-if="page === 'profile'" class="hero has-text-centered">
+                <h1 class="title is-1 pt-6">Profile</h1>
+                <div class="hero-body columns">
+                    <div class="column"></div>
+                    <div class="column is-quarter mb-5">
+                        <b-field label="Phone Number" :label-position="labelPosition">
+                            <b-input type="text" native-size="10" v-model="phoneNumber" readonly></b-input>
+                        </b-field>
+                        <b-field label="Name" :label-position="labelPosition">
+                            <b-input type="text" v-model="profile.name" readonly></b-input>
+                        </b-field>
+                        <b-field label="Email" :label-position="labelPosition">
+                            <b-input type="text" v-model="profile.email" readonly></b-input>
+                        </b-field>
+                        <b-button type="is-primary " outlined @click="edit" class="p-button-text">Edit</b-button>
+                        <b-button type="is-primary " outlined @click="page = 'home'" class="p-button-text">Back</b-button>
+                    </div>
+                    <div class="column"></div>
+                </div>
             </div>
 
-            <div v-else-if="page === 'profile-edit'" class="profile">
-                <b-field label="Phone Number" :label-position="labelPosition">
-                    <b-input type="text" native-size="10" v-model="phoneNumber" disabled></b-input>
-                </b-field><br>
-                <b-field label="Name" :label-position="labelPosition">
-                    <b-input type="text" v-model="profile.name"></b-input>
-                </b-field><br>
-                <b-field label="Email" :label-position="labelPosition">
-                    <b-input type="text" v-model="profile.email"></b-input>
-                </b-field><br>
-                <!-- <b-field label="Phone Number: " horizontal> {{phoneNumber}}</b-field><br> -->
-                <!-- <b-field label="Name: " horizontal><b-input type="text" class="textBox" v-model="profile.name"></b-input></b-field><br> -->
-                <!-- <b-field label="Email: " horizontal><b-input type="Email" class="textBox" v-model="profile.email"></b-input></b-field><br> -->
-                <b-button type="is-primary " outlined @click="save" class="p-button-text">Save</b-button>
-                <b-button type="is-primary " outlined @click="cancel" class="p-button-text">Cancel</b-button>
+            <div v-else-if="page === 'profile-edit'" class="hero has-text-centered">
+                <h1 class="title is-1 pt-6">Edit Profile</h1>
+                <div class="hero-body columns">
+                    <div class="column"></div>
+                    <div class="column is-quarter">
+                        <b-field label="Phone Number" :label-position="labelPosition">
+                            <b-input type="text" native-size="10" v-model="phoneNumber" readonly></b-input>
+                        </b-field>
+                        <b-field label="Name" :label-position="labelPosition">
+                            <b-input type="text" v-model="profile.name" required></b-input>
+                        </b-field>
+                        <b-field label="Email" :label-position="labelPosition">
+                            <b-input type="text" v-model="profile.email"></b-input>
+                        </b-field>
+                        <b-button type="is-primary " outlined @click="save" class="p-button-text">Save</b-button>
+                        <b-button type="is-primary " outlined @click="page = 'profile'" class="p-button-text">Cancel</b-button>
+                    </div>
+                    <div class="column"></div>
+                </div>
             </div>
 
-            <div v-else-if="page === 'admin'" >
-                <h1>Admin Page</h1>
-                <b-button type="is-primary " outlined @click="signOut" class="p-button-text">Sign out</b-button><br><br>
-                <b-button type="is-primary " outlined @click="showDonation" class="p-button-text">Show Donations</b-button>
-                <b-button type="is-primary " outlined @click="showUser" class="p-button-text">User Details</b-button>
-                <b-table :data="userDetails" 
-                :columns="userColumns" 
-                :sort-icon="sortIcon" 
-                :sort-icon-size="sortIconSize" @cellclick="handleCellClick" v-if="showUserTable">
-                </b-table>
-                <b-table :data="donationDetails" :columns="donationColumns" :sort-icon="sortIcon" :sort-icon-size="sortIconSize" v-if="showDonationTable"></b-table>
+            <div v-else-if="page === 'admin'" class="hero">
+                <div class="hero-body columns">
+                    <div class="column is-quarter has-text-centered">
+                        <h1>Admin Page</h1>
+                        <b-button type="is-primary " outlined @click="signOut" class="p-button-text">Sign out</b-button><br><br>
+                        <b-button type="is-primary " outlined @click="showDonation" class="p-button-text">Show Donations</b-button>
+                        <b-button type="is-primary " outlined @click="showUser" class="p-button-text">User Details</b-button>
+                        <b-table :data="userDetails" 
+                        :columns="userColumns" 
+                        :sort-icon="sortIcon" 
+                        :sort-icon-size="sortIconSize" @cellclick="handleCellClick" v-if="showUserTable">
+                        </b-table>
+                        <b-table :data="donationDetails" :columns="donationColumns" :sort-icon="sortIcon" :sort-icon-size="sortIconSize" v-if="showDonationTable"></b-table>
             </div>
+
         </div>
 
         <script src="lib/js/axios.min.js"></script>
@@ -412,13 +423,9 @@
                         localStorage.setItem("userDetails", JSON.stringify(this.userDetails))
                         console.log(this.userDetails)
                     },
-                    cancel(){
-                        this.profile.name = ''
-                        this.profile.email = ''
-                        this.page = 'profile'
-                    },
                     showProfile(){
                         this.page = 'profile'
+                        this.showNavbar = true
                         this.instance.get('/userProfile/'+this.phoneNumber)
                         .then((response) => {
                             console.log(response)
@@ -500,7 +507,7 @@
                                                     type="number"
                                                     :value="phoneNumber"
                                                     required 
-                                                    disabled>
+                                                    readonly>
                                                 </b-input>
                                             </b-field>
                                         </section>
