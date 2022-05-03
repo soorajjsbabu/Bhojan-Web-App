@@ -45,6 +45,14 @@ def users():
 
     return jsonify({'users' : users})
 
+@main.route('/userProfile/<phoneNumber>')
+def userProfile(phoneNumber):
+    user_profile = db.session.query(User).filter_by(phoneNumber = phoneNumber).first()
+    if user_profile:
+        return jsonify({'profile' : {'name' : user_profile.name, 'email' : user_profile.email}})
+    else:
+        return 'Error', 401
+
 @main.route('/add_donation', methods=['POST'])
 def add_donation():
     donation_data = request.get_json()

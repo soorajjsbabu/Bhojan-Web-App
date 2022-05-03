@@ -8,10 +8,14 @@
             }
             .profile{
                 line-height: 20px;
+                margin-right: 80%;
             }
             .donate-form{
                 line-height: 20px;
                 width: 25%;
+            }
+            b-input{
+                width: 10%
             }
             .profileEdit{
                 margin-right: 50%;
@@ -49,19 +53,30 @@
 
             <div v-else-if="page === 'home'" class="header">
                 <h1>{{header}}</h1>
-                <b-button type="is-primary " outlined @click="page = 'profile'" class="p-button-text">Profile</b-button>
+                <b-button type="is-primary " outlined @click="showProfile" class="p-button-text">Profile</b-button>
                 <b-button type="is-primary " outlined @click="signOut" class="p-button-text">Sign out</b-button><br><br>
                 <b-button type="is-primary " rounded outlined @click="showItem = !showItem" class="btn btn-primary">{{showItem ? "Cancel" :"Donate"}}</b-button>
 
                 <div v-if="showItem" class="donate-form">
                     <div class="card">
                         <div class="card-content">
-                            <div class="content">        
-                                Name: <b-input type="text" v-model="form.name" ></b-input><br>
-                                Phone Number: <b-input type="number" v-model="form.phoneNumber" ></b-input><br>
-                                Address Line 1: <b-input type="text" v-model="form.addLine1" ></b-input><br>
-                                Address Line 2: <b-input type="text" v-model="form.addLine2" ></b-input><br>
-                                Served For: <b-input type="number" v-model="form.servedFor" ></b-input><br>
+                            <div class="content">     
+                                <b-field label="Name" :label-position="labelPosition">
+                                    <b-input type="text" v-model="form.name" ></b-input>
+                                </b-field><br>
+                                <b-field label="Phone Number" :label-position="labelPosition">
+                                    <b-input type="number" v-model="form.phoneNumber" ></b-input>
+                                </b-field><br>
+                                <b-field label="Address Line 1" :label-position="labelPosition">
+                                    <b-input type="text" v-model="form.addLine1" ></b-input>
+                                </b-field><br>
+                                <b-field label="Address Line 2" :label-position="labelPosition">
+                                    <b-input type="text" v-model="form.addLine2" ></b-input>
+                                </b-field><br>
+                                <b-field label="Served For" :label-position="labelPosition">
+                                    <b-input type="number" v-model="form.servedFor" ></b-input>
+                                </b-field><br>
+                                
                                 <b-checkbox v-model="form.foodTypeVeg">Veg</b-checkbox>
                                 <b-checkbox v-model="form.foodTypeNonVeg">Non Veg</b-checkbox><br><br>
                                 <b-button type="is-primary " outlined @click="postNow" class="p-button-text">Submit</b-button>
@@ -72,17 +87,32 @@
             </div>
 
             <div v-else-if="page === 'profile'" class="profile">
-                <label>Phone Number: {{phoneNumber}}</label><br>
-                <label>Name: {{profile.name}}</label><br>
-                <label>Email: {{profile.email}}</label><br><br>
+                <b-field label="Phone Number" :label-position="labelPosition">
+                    <b-input type="text" native-size="10" v-model="phoneNumber" disabled></b-input>
+                </b-field><br>
+                <b-field label="Name" :label-position="labelPosition">
+                    <b-input type="text" v-model="profile.name" disabled></b-input>
+                </b-field><br>
+                <b-field label="Email" :label-position="labelPosition">
+                    <b-input type="text" v-model="profile.email" disabled></b-input>
+                </b-field><br>
                 <b-button type="is-primary " outlined @click="edit" class="p-button-text">Edit</b-button>
                 <b-button type="is-primary " outlined @click="page = 'home'" class="p-button-text">Back</b-button>
             </div>
 
-            <div v-else-if="page === 'profile-edit'" class="profileEdit">
-                <b-field label="Phone Number: " horizontal> {{phoneNumber}}</b-field><br>
-                <b-field label="Name: " horizontal><b-input type="text" class="textBox" v-model="profile.name"></b-input></b-field><br>
-                <b-field label="Email: " horizontal><b-input type="Email" class="textBox" v-model="profile.email"></b-input></b-field><br>
+            <div v-else-if="page === 'profile-edit'" class="profile">
+                <b-field label="Phone Number" :label-position="labelPosition">
+                    <b-input type="text" native-size="10" v-model="phoneNumber" disabled></b-input>
+                </b-field><br>
+                <b-field label="Name" :label-position="labelPosition">
+                    <b-input type="text" v-model="profile.name"></b-input>
+                </b-field><br>
+                <b-field label="Email" :label-position="labelPosition">
+                    <b-input type="text" v-model="profile.email"></b-input>
+                </b-field><br>
+                <!-- <b-field label="Phone Number: " horizontal> {{phoneNumber}}</b-field><br> -->
+                <!-- <b-field label="Name: " horizontal><b-input type="text" class="textBox" v-model="profile.name"></b-input></b-field><br> -->
+                <!-- <b-field label="Email: " horizontal><b-input type="Email" class="textBox" v-model="profile.email"></b-input></b-field><br> -->
                 <b-button type="is-primary " outlined @click="save" class="p-button-text">Save</b-button>
                 <b-button type="is-primary " outlined @click="cancel" class="p-button-text">Cancel</b-button>
             </div>
@@ -98,14 +128,6 @@
                 :sort-icon-size="sortIconSize" @cellclick="handleCellClick" v-if="showUserTable">
                 </b-table>
                 <b-table :data="donationDetails" :columns="donationColumns" :sort-icon="sortIcon" :sort-icon-size="sortIconSize" v-if="showDonationTable"></b-table>
-            </div>
-
-            <div v-else-if="page === 'admin-profile-edit'" class="profileEdit">
-                <b-field label="Phone Number: " horizontal><b-input type="text" class="textBox" v-model="phoneNumber"></b-field><br>
-                <b-field label="Name: " horizontal><b-input type="text" class="textBox" v-model="profile.name"></b-input></b-field><br>
-                <b-field label="Email: " horizontal><b-input type="Email" class="textBox" v-model="profile.email"></b-input></b-field><br>
-                <b-button type="is-primary " outlined @click="update" class="p-button-text">Update</b-button>
-                <b-button type="is-primary " outlined @click="page = 'admin'" class="p-button-text">Cancel</b-button>
             </div>
         </div>
 
@@ -152,6 +174,8 @@
                     userStringified: [],
                     phoneNumber: '',
                     otp: '',
+                    labelPosition: 'on-border',
+                    oldUser: false,
                     showItem: false,
                     showDonationTable: false,
                     showUserTable: false,
@@ -236,7 +260,6 @@
                             'Content-type': 'application/json',
                         }
                     });
-                    
                     this.profile.name = localStorage.getItem("name")
                     this.phoneNumber = localStorage.getItem("phoneNumber")
                     this.profile.email = localStorage.getItem("email")
@@ -280,7 +303,6 @@
                             servedFor: this.form.servedFor,
                             foodType: this.foodType,
                         })
-
                         this.donations.push({
                             name: this.form.name,
                             phoneNumber: this.form.phoneNumber,
@@ -363,44 +385,57 @@
                     },
                     save(){
                         this.page = 'profile'
-                        this.userDetails.push({
-                            name: this.profile.name,
-                            email: this.profile.email,
-                            phoneNumber: this.phoneNumber,
-                        })
+                        // if(this.profile.name == '' && this.profile.email == ''){
+                        //     this.instance.post('/add_user', {
+                        //         name: this.profile.name,
+                        //         email: this.profile.email,
+                        //         phoneNumber: this.phoneNumber,
+                        //     })
+                        // }
+                        // else{
+                        //     this.instance.put('/update_user', {
+                        //         name: this.profile.name,
+                        //         email: this.profile.email,
+                        //         phoneNumber: this.phoneNumber,
+                        //     })
+                        // }
                         this.instance.post('/add_user', {
                             name: this.profile.name,
                             email: this.profile.email,
                             phoneNumber: this.phoneNumber,
                         })
-
+                        this.userDetails.push({
+                            name: this.profile.name,
+                            email: this.profile.email,
+                            phoneNumber: this.phoneNumber,
+                        })
                         localStorage.setItem("userDetails", JSON.stringify(this.userDetails))
                         console.log(this.userDetails)
-                    },
-                    update(){
-                        this.page = 'admin'
-                        this.userDetails.push({
-                            name: this.profile.name,
-                            email: this.profile.email,
-                            phoneNumber: this.phoneNumber,
-                        })
-                        this.instance.post('/add_user', {
-                            name: this.profile.name,
-                            email: this.profile.email,
-                            phoneNumber: this.phoneNumber,
-                        })
-                        this.$buefy.toast.open('User details updated!')
-                        this.userDetails.splice(rowIndex, 1)
                     },
                     cancel(){
                         this.profile.name = ''
                         this.profile.email = ''
                         this.page = 'profile'
                     },
+                    showProfile(){
+                        this.page = 'profile'
+                        this.instance.get('/userProfile/'+this.phoneNumber)
+                        .then((response) => {
+                            console.log(response)
+                            this.profile['name'] = response.data.profile.name
+                            this.profile['email'] = response.data.profile.email
+                            console.log(response.data.profile.name)
+                        
+                            if(response.data.profile.name == null){
+                                this.oldUser = false
+                            }
+                        })
+                        console.log(this.oldUser)
+                        console.log(this.profile)
+                    },
                     showDonation(){
                         this.showDonationTable = !this.showDonationTable
                         this.showUserTable = false
-                        // this.donationDetails = JSON.parse(localStorage.getItem("donations"))
                         this.instance.get('/donations')
                         .then((response) => {
                             this.donationDetails = response.data.donations
@@ -413,7 +448,6 @@
                     showUser(){
                         this.showUserTable = !this.showUserTable
                         this.showDonationTable = false
-                        // this.userDetails = JSON.parse(localStorage.getItem("userDetails"))
                         this.instance.get('/users')
                         .then((response) => {
                             console.log(response)
@@ -508,7 +542,8 @@
                         event.edit = '<img src=lib/edit.svg>'
                         event.delete = '<img src=lib/delete.svg>'
                         this.userDetails.splice(rowIndex, 1, event)
-                        console.log('Triggered')
+                        this.$buefy.toast.open('User details updated!')
+                        // console.log('Triggered')
                         console.log(event)
                     },
                     deleteUser(rowIndex){
