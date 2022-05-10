@@ -9,17 +9,17 @@
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css">
         <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"> -->
-    </head>
+        
+        </head>
     <body>
         <div id="app">
-            
             <div v-if="page === 'login'" class="hero has-text-centered">
                 <h1 class="title is-1 pt-3">Login</h1>
                 <div class="hero-body columns">
                     <div class="column"></div>
                     <div class="column is-quarter">
                         <b-field label="Phone Number" :label-position="labelPosition">
-                            <b-input type="number" @keyup.native.enter="login" v-model="phoneNumber" placeholder="Enter your phone number" required class="mt-2"></b-input>
+                            <b-input type="number" @keyup.native.enter="login" v-model="phoneNumber" placeholder="Enter your phone number" required class="mt-2" validation-message="Phone number should not be empty"></b-input>
                         </b-field>
                         <b-button type="is-primary" outlined @click="login" class="p-button-text">Login</b-button>
                     </div>
@@ -71,9 +71,9 @@
                                         <b-field label="Served For" :label-position="labelPosition">
                                             <b-input type="number" v-model="form.servedFor" required></b-input>
                                         </b-field>
-                                        <b-checkbox v-model="form.foodTypeVeg">Veg</b-checkbox>
-                                        <b-checkbox v-model="form.foodTypeNonVeg">Non Veg</b-checkbox><br><br>
-                                        <b-button type="is-primary " outlined @click="postNow" class="p-button-text">Submit</b-button>
+                                        <b-checkbox v-model="form.foodTypeVeg" class="pl-6">Veg</b-checkbox>
+                                        <b-checkbox v-model="form.foodTypeNonVeg" class="pr-6">Non Veg</b-checkbox><br>
+                                        <b-button type="is-primary " outlined @click="postNow" class="p-button-text mt-4">Submit</b-button>
                                     </div>
                                 </div>
                             </div>
@@ -125,12 +125,12 @@
                 </div>
             </div>
 
-            <div v-else-if="page === 'admin'" class="hero">
+            <div v-else-if="page === 'admin'" class="hero has-text-centered">
+                <h1 class="title is-1 pt-6">Admin</h1>
                 <div class="hero-body columns">
                     <div class="column is-quarter has-text-centered">
-                        <h1>Admin Page</h1>
-                        <b-button type="is-primary " outlined @click="signOut" class="p-button-text">Sign out</b-button><br><br>
-                        <b-button type="is-primary " outlined @click="showDonation" class="p-button-text">Show Donations</b-button>
+                        <b-button type="is-primary " outlined @click="signOut" class="p-button-text mb-5">Sign out</b-button><br>
+                        <b-button type="is-primary " outlined @click="showDonation" class="p-button-text">Donations</b-button>
                         <b-button type="is-primary " outlined @click="showUser" class="p-button-text">User Details</b-button>
                         <b-table :data="userDetails" 
                         :columns="userColumns" 
@@ -138,8 +138,9 @@
                         :sort-icon-size="sortIconSize" @cellclick="handleCellClick" v-if="showUserTable">
                         </b-table>
                         <b-table :data="donationDetails" :columns="donationColumns" :sort-icon="sortIcon" :sort-icon-size="sortIconSize" v-if="showDonationTable"></b-table>
+                    </div>
+                </div>
             </div>
-
         </div>
 
         <script src="lib/js/axios.min.js"></script>
@@ -163,7 +164,7 @@
                         phoneNumber: '',
                         addLine1: '',
                         addLine2: '',
-                        servedFor: 0,
+                        servedFor: '',
                         foodTypeVeg: false,
                         foodTypeNonVeg: false,
                         foodtype: '',
@@ -303,9 +304,6 @@
                         this.formClick = !this.formClick
                         console.log(axios) 
 
-                        this.form.dateTime = new Date().toLocaleString();
-                        console.log(this.form.dateTime)
-
                         this.instance.post('/add_donation', {
                             name: this.form.name,
                             phoneNumber: this.form.phoneNumber,
@@ -321,7 +319,6 @@
                             addLine2: this.form.addLine2,
                             servedFor: this.form.servedFor,
                             foodType: this.foodType,
-                            dateTime: this.form.dateTime,
                         })
                         localStorage.setItem("donations", JSON.stringify(this.donations))
 
@@ -382,7 +379,7 @@
                         this.form.name = '' 
                         this.form.addLine1 = ''
                         this.form.addLine2 = ''
-                        this.form.servedFor = 0
+                        this.form.servedFor = ''
                         this.form.foodTypeVeg = false
                         this.form.foodTypeNonVeg = false
                         this.form.foodtype = ''
@@ -447,7 +444,7 @@
                         .then((response) => {
                             this.donationDetails = response.data.donations
                             for(var i=0;i<this.donationDetails.length;i++){
-                                this.donationDetails[i]['dateTime'] = new Date(this.donationDetails[i]['dateTime']).toLocaleString('en-IN',{dateStyle:"long",timeStyle:"medium"})
+                                this.donationDetails[i]['dateTime'] = new Date(this.donationDetails[i]['dateTime']).toLocaleString({dateStyle:"short",timeStyle:"short"})
                             }
                             console.log(response)
                         })

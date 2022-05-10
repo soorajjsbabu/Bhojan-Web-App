@@ -1,0 +1,3 @@
+install python3
+install pipenv using pip3 (sudo apt install pipenv)
+pipenv install flask flask-sqlalchemy 

@@ -15,4 +15,4 @@ class Donation(db.Model):
     addLine2 = db.Column(db.String(50))
     servedFor = db.Column(db.Integer)  
     foodType = db.Column(db.String(10))  
-    dateTime = db.Column(db.DateTime, default=datetime.datetime.now)
+    dateTime = db.Column(db.DateTime, default=datetime.datetime.utcnow)
