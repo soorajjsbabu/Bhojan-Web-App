@@ -19,23 +19,30 @@
                     <div class="column"></div>
                     <div class="column is-quarter">
                         <b-field label="Phone Number" :label-position="labelPosition">
-                            <b-input type="number" @keyup.native.enter="login" v-model="phoneNumber" placeholder="Enter your phone number" required class="mt-2" validation-message="Phone number should not be empty"></b-input>
+                            <b-input type="number" v-model="phoneNumber" placeholder="Enter your phone number" required class="mt-2" validation-message="Phone number should not be empty"></b-input>
+                        </b-field>
+                        <b-field label="Password" :label-position="labelPosition">
+                            <b-input type="password" @keyup.native.enter="login" v-model="password" placeholder="Enter your phone number" required class="mt-2" validation-message="Phone number should not be empty"></b-input>
                         </b-field>
                         <b-button type="is-primary" outlined @click="login" class="p-button-text">Login</b-button>
+                        <b-button type="is-primary" outlined @click="page = 'signup'" class="p-button-text">Signup</b-button>
                     </div>
                     <div class="column"></div>
                 </div>
             </div>
 
-            <div v-else-if="page === 'otp'" class="hero has-text-centered">
-                <h1 class="title is-1 pt-3">OTP</h1>
+            <div v-else-if="page === 'signup'" class="hero has-text-centered">
+                <h1 class="title is-1 pt-3">Signup</h1>
                 <div class="hero-body columns">
                     <div class="column"></div>
                     <div class="column is-quarter">
-                        <b-field label="OTP" :label-position="labelPosition">
-                            <b-input type="number" @keyup.native.enter="otpVerify" v-model="otp" placeholder="Enter OTP" required class="mt-2"></b-input>
+                        <b-field label="Phone Number" :label-position="labelPosition">
+                            <b-input type="number" @keyup.native.enter="signup" v-model="phoneNumber" placeholder="Enter your phone number" required class="mt-2"></b-input>
                         </b-field>
-                        <b-button type="is-primary " outlined @click="otpVerify">Verify</b-button>   
+                        <b-field label="Password" :label-position="labelPosition">
+                            <b-input type="password" @keyup.native.enter="login" v-model="password" placeholder="Enter your phone number" required class="mt-2" validation-message="Phone number should not be empty"></b-input>
+                        </b-field>
+                        <b-button type="is-primary " outlined @click="signup">Signup</b-button>   
                         <b-button type="is-primary " outlined @click="page = 'login'">Back</b-button>
                     </div>
                     <div class="column"></div>
@@ -185,7 +192,7 @@
                     users: [],
                     userStringified: [],
                     phoneNumber: '',
-                    otp: '',
+                    password: '',
                     labelPosition: 'on-border',
                     oldUser: false,
                     showItem: false,
@@ -341,26 +348,19 @@
                                 ariaModal: true,
                             })
                         }
+                        else if(this.phoneNumber === '12345'){
+                                this.page = 'admin'   
+                                this.showDonationTable = false
+                                this.showUserTable = false
+                            }
                         else{
-                            this.page = 'otp'
+                            this.page = 'home'
                             this.form.phoneNumber = this.phoneNumber
                             
                             console.log(this.form)
                         }
                     },
-                    otpVerify(){
-                        if(this.otp === '123'){
-                            if(this.phoneNumber === '12345'){
-                                this.page = 'admin'   
-                                this.showDonationTable = false
-                                this.showUserTable = false
-                            }
-                            else{
-                                this.page = 'home'
-                            }
-                            localStorage.setItem("phoneNumber", this.phoneNumber)
-                        }
-                        else{
+                    signup(){
                             this.$buefy.dialog.alert({
                                 message: 'OTP Incorrect!',
                                 type: 'is-danger',
@@ -370,7 +370,6 @@
                                 ariaRole: 'alertdialog',
                                 ariaModal: true,
                             })
-                        }   
                     },
                     signOut(){
                         localStorage.removeItem("phoneNumber")
@@ -384,7 +383,7 @@
                         this.form.foodTypeNonVeg = false
                         this.form.foodtype = ''
                         this.form.dateTime = ''
-                        this.otp = ''
+                        this.password = ''
                         this.profile.name = ''
                         this.profile.email = ''
                     },
@@ -394,7 +393,7 @@
                     save(){
                         this.page = 'profile'
                         // if(this.profile.name == '' && this.profile.email == ''){
-                        //     this.instance.post('/add_user', {
+                        //     this.instance.post('/add_user_profile', {
                         //         name: this.profile.name,
                         //         email: this.profile.email,
                         //         phoneNumber: this.phoneNumber,
@@ -407,7 +406,7 @@
                         //         phoneNumber: this.phoneNumber,
                         //     })
                         // }
-                        this.instance.post('/add_user', {
+                        this.instance.post('/add_user_profile', {
                             name: this.profile.name,
                             email: this.profile.email,
                             phoneNumber: this.phoneNumber,

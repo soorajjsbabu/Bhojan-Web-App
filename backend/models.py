@@ -16,3 +16,8 @@ class Donation(db.Model):
     servedFor = db.Column(db.Integer)  
     foodType = db.Column(db.String(10))  
     dateTime = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+class Register(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    phoneNumber = db.Column(db.String(10))
+    password = db.Column(db.String(30))

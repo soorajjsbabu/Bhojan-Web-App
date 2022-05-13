@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from . import db 
-from .models import User, Donation
+from .models import User, Donation, Register
 from sqlalchemy import update
 
 main = Blueprint('main', __name__)
@@ -9,9 +9,20 @@ main = Blueprint('main', __name__)
 def add_user():
     user_data = request.get_json()
 
-    new_user = User(phoneNumber=user_data['phoneNumber'], name=user_data['name'], email=user_data['email'])
+    new_user = Register(phoneNumber=user_data['phoneNumber'], password=user_data['password'])
 
     db.session.add(new_user)
+    db.session.commit()
+
+    return 'Done', 201
+
+@main.route('/add_user_profile', methods=['POST'])
+def add_user_profile():
+    user_profile_data = request.get_json()
+
+    new_user_profile = User(phoneNumber=user_profile_data['phoneNumber'], name=user_profile_data['name'], email=user_profile_data['email'])
+
+    db.session.add(new_user_profile)
     db.session.commit()
 
     return 'Done', 201
