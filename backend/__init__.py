@@ -19,7 +19,7 @@ def create_app():
 
     db.init_app(app)
 
-    from .donations import main
+    from .services import main
     app.register_blueprint(main)
 
     return app

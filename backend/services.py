@@ -1,20 +1,41 @@
 from flask import Blueprint, jsonify, request
 from . import db 
-from .models import User, Donation, Register
+from .models import User, Donation, Registry
 from sqlalchemy import update
 
 main = Blueprint('main', __name__)
 
-@main.route('/add_user', methods=['POST'])
-def add_user():
+@main.route('/signup', methods=['POST'])
+def signup():
+    user_data = request.get_json()
+    
+    try:
+        if db.session.query(Registry).filter(Registry.phoneNumber == user_data['phoneNumber']).first():
+            return 'Phone number already registered', 401
+        
+        else:
+            new_user = Registry(phoneNumber=user_data['phoneNumber'], password=user_data['password'])
+
+            db.session.add(new_user)
+            db.session.commit()
+
+            return 'Done', 201
+    
+    except Exception:
+        return 'Signup unsuccessful', 401
+
+@main.route('/login', methods=['POST'])
+def login():
     user_data = request.get_json()
 
-    new_user = Register(phoneNumber=user_data['phoneNumber'], password=user_data['password'])
-
-    db.session.add(new_user)
-    db.session.commit()
-
-    return 'Done', 201
+    login_data = db.session.query(Registry).filter(Registry.phoneNumber == user_data['phoneNumber'], Registry.password == user_data['password']).first()
+    # user_login = Registry(phoneNumber=user_data['phoneNumber'], name=user_data['name'])
+    if login_data:
+        return 'OK', 201
+    elif db.session.query(Registry).filter(Registry.phoneNumber == user_data['phoneNumber']).first():
+        return 'Incorrect password', 401
+    else:
+        return 'Phone number not registered', 401
 
 @main.route('/add_user_profile', methods=['POST'])
 def add_user_profile():
