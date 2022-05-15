@@ -9,61 +9,72 @@
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css">
         <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"> -->
-        
+        <style>
+            .has-bg-img { background: url('lib/food-donation3.png'); background-size: contain; background-repeat: no-repeat};
+            .scroll::-webkit-scrollbar {display:none;}
+        </style>
     </head>
     <body>
         <div id="app">
-            <div v-if="page === 'login'" class="hero has-text-centered">
-                <h1 class="title is-1 pt-3">Login</h1>
+            
+            <nav class="navbar">
+                <div class="container">
+                  <div id="navMenu" class="navbar-menu">
+                    <div class="navbar-start">
+                      <a class="navbar-item" v-if="user" @click="page='intro'">
+                        Home
+                      </a>
+                    </div>
+              
+                    <div class="navbar-end">
+                      <div class="navbar-item">
+                        <div class="buttons" v-if="signedIn === false">
+                            <b-button class="is-link" @click="page='signup'">
+                                <strong>Sign up</strong>
+                            </b-button>
+                            <b-button class="is-link" outlined @click="page='login'">
+                                Log in
+                            </b-button>
+                        </div>
+                        <div class="buttons" v-else>
+                            <b-button v-if="user" class="is-link" outlined @click="showProfile">
+                                Profile
+                            </b-button>
+                            <b-button class="is-link" @click="signOut">
+                                <strong>Sign Out</strong>
+                            </b-button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </nav>
+
+            <div v-if="page === 'intro'" class="hero is-fullheight-with-navbar has-bg-img pb-3">
                 <div class="hero-body columns">
-                    <div class="column"></div>
-                    <div class="column is-quarter">
-                        <b-field label="Phone Number" :label-position="labelPosition">
-                            <b-input type="number" v-model="phoneNumber" placeholder="Enter your phone number" required class="mt-2" validation-message="Phone number should not be empty"></b-input>
-                        </b-field>
-                        <b-field label="Password" :label-position="labelPosition">
-                            <b-input type="password" @keyup.native.enter="login" v-model="password" placeholder="Enter your phone number" required class="mt-2" validation-message="Password should not be empty"></b-input>
-                        </b-field>
-                        <b-button type="is-primary" outlined @click="login" class="p-button-text">Login</b-button>
-                        <b-button type="is-primary" outlined @click="signupPage" class="p-button-text">Signup</b-button>
+                    <div class="column is-half">
+                        <section class="section">
+                        <div class="content ml-2">
+                            <h2 class="has-text-light title is-2">Have Excess Food? </h2>
+                            <p class="has-text-light subtitle">Donate food to help people out of starving.<br> Your donation makes someone's life happy</p>
+                            <b-button type="is-link" @click="donate">{{showItem ? "Cancel" :"Donate"}}</b-button>
+                        </div>
+                        </section>
+                        <section class="section"></section>
+                        <section class="section"></section>
                     </div>
                     <div class="column"></div>
-                </div>
-            </div>
-
-            <div v-else-if="page === 'signup'" class="hero has-text-centered">
-                <h1 class="title is-1 pt-3">Signup</h1>
-                <div class="hero-body columns">
-                    <div class="column"></div>
-                    <div class="column is-quarter">
-                        <b-field label="Phone Number" :label-position="labelPosition">
-                            <b-input type="number" @keyup.native.enter="signup" v-model="phoneNumber" placeholder="Enter your phone number" required class="mt-2" validation-message="Phone number should not be empty"></b-input>
-                        </b-field>
-                        <b-field label="Password" :label-position="labelPosition">
-                            <b-input type="password" @keyup.native.enter="login" v-model="password" placeholder="Enter your password" required class="mt-2" validation-message="Password should not be empty"></b-input>
-                        </b-field>
-                        <b-button type="is-primary " outlined @click="register">Signup</b-button>   
-                        <b-button type="is-primary " outlined @click="page = 'login'">Back</b-button>
-                    </div>
-                    <div class="column"></div>
-                </div>
-            </div>
-
-            <div v-else-if="page === 'home'" class="hero has-text-centered">
-                <h1 class="title is-1 pt-3">{{header}}</h1>
-                <div class="hero-body columns">
-                    
-                    <div class="column"></div>
-                    <div class="column is-one-thirds">
-                        <b-button type="is-primary " outlined @click="showProfile" class="p-button-text mt-3">Profile</b-button>
-                        <b-button type="is-primary " outlined @click="signOut" class="p-button-text mt-3">Sign out</b-button><br>
-                        <b-button type="is-primary " rounded outlined @click="showItem = !showItem" class="btn btn-primary mt-3">{{showItem ? "Cancel" :"Donate"}}</b-button>
-
-                        <div v-if="showItem">
-                            <div class="card">
+                    <div class="column is-two-fifths">
+                        <section v-if="showItem === false" class="section is-small has-background-info-light pt-2 pb-2 pl-2 pr-2">
+                            <h4 class="subtitle has-text-dark is-4">If you can't feed hundred people, then feed just one.</h4>
+                            <h3 class="title has-text-dark is-3">-Mother Teresa</h3>
+                        </section>
+                        <section class="section" v-if="signedIn===true & showItem===true">
+                            <div class="card has-text-centered">
                                 <div class="card-content">
-                                    <div class="content">     
-                                        <b-field label="Name" :label-position="labelPosition">
+                                    <div class="content">   
+                                        <h2 class="title is-2">Donate here!</h2>  
+                                        <b-field class="has-text-white" label="Name" :label-position="labelPosition">
                                             <b-input type="text" v-model="form.name" required class="mt-2"></b-input>
                                         </b-field>
                                         <b-field label="Phone Number" :label-position="labelPosition">
@@ -80,21 +91,60 @@
                                         </b-field>
                                         <b-checkbox v-model="form.foodTypeVeg" class="pl-6">Veg</b-checkbox>
                                         <b-checkbox v-model="form.foodTypeNonVeg" class="pr-6">Non Veg</b-checkbox><br>
-                                        <b-button type="is-primary " outlined @click="postNow" class="p-button-text mt-4">Submit</b-button>
+                                        <b-button type="is-link" @click="postNow" class="p-button-text mt-4">Submit</b-button>
+                                        <b-button type="is-link" outlined @click="showItem = false" class="p-button-text mt-4">Cancel</b-button>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </section>
                     </div>
-                    <div class="column"></div>  
                 </div>
             </div>
 
-            <div v-else-if="page === 'profile'" class="hero has-text-centered">
-                <h1 class="title is-1 pt-6">Profile</h1>
+            <div v-if="page === 'login'" id="login" class="hero has-text-centered is-fullheight has-bg-img">
+                <h1 class="title is-1 pt-3 has-text-light">Login</h1>
                 <div class="hero-body columns">
                     <div class="column"></div>
-                    <div class="column is-quarter mb-5">
+                    <div class="column is-quarter">
+                        <b-field label="Phone Number" :label-position="labelPosition">
+                            <b-input type="number" v-model="phoneNumber" placeholder="Enter your phone number" required class="mt-2" validation-message="Phone number should not be empty"></b-input>
+                        </b-field>
+                        <b-field label="Password" :label-position="labelPosition">
+                            <b-input type="password" @keyup.native.enter="login" v-model="password" placeholder="Enter your password" required class="mt-2" password-reveal validation-message="Password should not be empty"></b-input>
+                        </b-field>
+                        <b-button type="is-link" focused @click="login" class="p-button-text">Login</b-button>
+                        <b-button type="is-link" @click="signupPage" class="p-button-text">Signup</b-button>
+                    </div>
+                    <div class="column"></div>
+                </div>
+            </div>
+
+            <div v-else-if="page === 'signup'" class="hero has-text-centered is-fullheight has-bg-img">
+                <h1 class="title is-1 pt-3">Signup</h1>
+                <div class="hero-body columns">
+                    <div class="column"></div>
+                    <div class="column is-quarter">
+                        <b-field label="Phone Number" :label-position="labelPosition">
+                            <b-input type="number" @keyup.native.enter="signup" v-model="phoneNumber" placeholder="Enter your phone number" required class="mt-2" validation-message="Phone number should not be empty"></b-input>
+                        </b-field>
+                        <b-field label="Password" :label-position="labelPosition">
+                            <b-input type="password" @keyup.native.enter="login" v-model="password" placeholder="Enter your password" required class="mt-2" password-reveal validation-message="Password should not be empty"></b-input>
+                        </b-field>
+                        <b-field label="Password" :label-position="labelPosition">
+                            <b-input type="password" @keyup.native.enter="login" v-model="passCheck" placeholder="Re-Enter your password" required class="mt-2" password-reveal validation-message="Password should not be empty"></b-input>
+                        </b-field>
+                        <b-button type="is-link" @click="register">Signup</b-button>   
+                        <b-button type="is-link" @click="page = 'login'">Back</b-button>
+                    </div>
+                    <div class="column"></div>
+                </div>
+            </div>
+
+            <div v-else-if="page === 'profile'" class="hero has-text-centered is-fullheight-with-navbar has-bg-img">
+                <h1 class="title is-1 pt-6 has-text-light">Profile</h1>
+                <div class="hero-body columns">
+                    <div class="column"></div>
+                    <div class="column is-quarter has-background-info-light">
                         <b-field label="Phone Number" :label-position="labelPosition">
                             <b-input type="text" native-size="10" v-model="phoneNumber" readonly></b-input>
                         </b-field>
@@ -104,18 +154,18 @@
                         <b-field label="Email" :label-position="labelPosition">
                             <b-input type="text" v-model="profile.email" readonly></b-input>
                         </b-field>
-                        <b-button type="is-primary " outlined @click="page = 'profile-edit'" class="p-button-text">Edit</b-button>
-                        <b-button type="is-primary " outlined @click="page = 'home'" class="p-button-text">Back</b-button>
+                        <b-button type="is-link" @click="page = 'profile-edit'" class="p-button-text">Edit</b-button>
+                        <b-button type="is-link" outlined @click="page = 'intro'" class="p-button-text">Back</b-button>
                     </div>
                     <div class="column"></div>
                 </div>
             </div>
 
-            <div v-else-if="page === 'profile-edit'" class="hero has-text-centered">
-                <h1 class="title is-1 pt-6">Edit Profile</h1>
+            <div v-else-if="page === 'profile-edit'" class="hero has-text-centered is-fullheight-with-navbar has-bg-img">
+                <h1 class="title is-1 pt-6 has-text-light">Edit Profile</h1>
                 <div class="hero-body columns">
                     <div class="column"></div>
-                    <div class="column is-quarter">
+                    <div class="column is-quarter has-background-info-light">
                         <b-field label="Phone Number" :label-position="labelPosition">
                             <b-input type="text" native-size="10" v-model="phoneNumber" readonly></b-input>
                         </b-field>
@@ -125,18 +175,17 @@
                         <b-field label="Email" :label-position="labelPosition">
                             <b-input type="email" v-model="profile.email" required></b-input>
                         </b-field>
-                        <b-button type="is-primary " outlined @click="save" class="p-button-text">Save</b-button>
-                        <b-button type="is-primary " outlined @click="page = 'profile'" class="p-button-text">Cancel</b-button>
+                        <b-button type="is-link" outlined @click="save" class="p-button-text">Save</b-button>
+                        <b-button type="is-link" outlined @click="page = 'profile'" class="p-button-text">Cancel</b-button>
                     </div>
                     <div class="column"></div>
                 </div>
             </div>
 
             <div v-else-if="page === 'admin'" class="hero has-text-centered">
-                <h1 class="title is-1 pt-6">Admin</h1>
+                <h1 class="title is-1 ">Admin</h1>
                 <div class="hero-body columns">
                     <div class="column is-quarter has-text-centered">
-                        <b-button type="is-primary " outlined @click="signOut" class="p-button-text mb-5">Sign out</b-button><br>
                         <b-button type="is-primary " outlined @click="showDonation" class="p-button-text">Donations</b-button>
                         <b-button type="is-primary " outlined @click="showUser" class="p-button-text">User Details</b-button>
                         <b-table :data="userDetails" 
@@ -164,7 +213,7 @@
                 el: '#app',
                 data: {
                     val: '',
-                    page: 'login',
+                    page: 'intro',
                     header: "Food Donation",
                     form:{    
                         name: '' ,
@@ -191,9 +240,13 @@
                     userDetails: [],
                     users: [],
                     userStringified: [],
+                    loadSrc: '',
                     phoneNumber: '',
                     password: '',
+                    passCheck: '',
                     labelPosition: 'on-border',
+                    user: true,
+                    signedIn: false,
                     oldUser: false,
                     showItem: false,
                     showDonationTable: false,
@@ -281,15 +334,19 @@
                         }
                     });
                     this.phoneNumber = localStorage.getItem("phoneNumber")
-                    // console.log(this.phoneNumber)
+                    console.log(this.phoneNumber)
                     if(this.phoneNumber === '12345'){
                         this.page = 'admin'
+                        this.signedIn = true
+                        this.user = false
                     }
                     else if(this.phoneNumber === '' || this.phoneNumber === null){
-                        this.page = 'login'
+                        this.page = 'intro'
                     }
                     else if(this.phoneNumber !== ''){
-                        this.page = 'home'
+                        this.page = 'intro'
+                        this.signedIn = true
+                        this.user = true
                     }
                 },
                 computed: {
@@ -335,6 +392,9 @@
                         })
                         this.showItem = false
                     },
+                    onLoad1(event, src) {
+                        this.loadSrc = src
+                    },
                     login(){
                         if(this.phoneNumber === '' || this.phoneNumber === null){
                             this.$buefy.dialog.alert({
@@ -366,9 +426,17 @@
                             .then((response) => {
                                 console.log(response)
                                 // this.loginDetails = response.data.phoneNumber    
-                                if(response.status === 201){
-                                    this.page = 'home'                            
+                                if(response.status === 201 && this.phoneNumber === '12345'){
+                                    this.page = 'admin'
+                                    this.user = false
+                                    this.signedIn = true
+                                    localStorage.setItem("phoneNumber", this.phoneNumber)
+                                }
+                                else if(response.status === 201){
+                                    this.page = 'intro'
+                                    // this.page = 'home'                            
                                     this.form.phoneNumber = this.phoneNumber
+                                    this.signedIn = true
                                     localStorage.setItem("phoneNumber", this.phoneNumber)
                                 }
                             })
@@ -404,9 +472,20 @@
                                 ariaModal: true,
                             })
                         }
-                        else if(this.password === '' || this.password === null){
+                        else if(this.password === '' || this.password === null || this.passCheck === '' || this.passCheck === null){
                             this.$buefy.dialog.alert({
                                 message: 'Enter a password!',
+                                type: 'is-danger',
+                                hasIcon: true,
+                                icon: 'times-circle',
+                                iconPack: 'fa',
+                                ariaRole: 'alertdialog',
+                                ariaModal: true,
+                            })
+                        }
+                        else if(this.password !== this.passCheck){
+                            this.$buefy.dialog.alert({
+                                message: 'Password does not match!',
                                 type: 'is-danger',
                                 hasIcon: true,
                                 icon: 'times-circle',
@@ -442,7 +521,9 @@
                     signOut(){
                         localStorage.removeItem("phoneNumber")
                         this.phoneNumber = ''
-                        this.page = 'login'   
+                        this.page = 'intro'   
+                        this.signedIn = false
+                        this.user = true
                         this.form.name = '' 
                         this.form.addLine1 = ''
                         this.form.addLine2 = ''
@@ -454,6 +535,14 @@
                         this.password = ''
                         this.profile.name = ''
                         this.profile.email = ''
+                    },
+                    donate(){
+                        if(this.signedIn === true){
+                            this.showItem = !this.showItem
+                        }
+                        else{
+                            this.page = 'login'
+                        }
                     },
                     save(){
                         this.page = 'profile'
@@ -471,6 +560,10 @@
                                 phoneNumber: this.phoneNumber,
                             })
                         }
+                        this.$buefy.toast.open({
+                            message: 'Profile Updated',
+                            type: 'is-success',
+                        })
                     },
                     showProfile(){
                         this.page = 'profile'

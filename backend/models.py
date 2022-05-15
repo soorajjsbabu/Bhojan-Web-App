@@ -2,9 +2,9 @@ from . import db
 import datetime
 
 class User(db.Model):
-    phoneNumber = db.Column(db.String(10), primary_key=True)
-    name = db.Column(db.String(30))
-    email = db.Column(db.String(30))
+    phoneNumber = db.Column(db.String(10), primary_key=True, nullable=False)
+    name = db.Column(db.String(30), nullable=False)
+    email = db.Column(db.String(30), nullable=False)
 
 class Donation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
