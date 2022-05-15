@@ -105,7 +105,7 @@
                 <h1 class="title is-1 pt-3 has-text-light">Login</h1>
                 <div class="hero-body columns">
                     <div class="column"></div>
-                    <div class="column is-quarter">
+                    <div class="column is-quarter has-background-info-light">
                         <b-field label="Phone Number" :label-position="labelPosition">
                             <b-input type="number" v-model="phoneNumber" placeholder="Enter your phone number" required class="mt-2" validation-message="Phone number should not be empty"></b-input>
                         </b-field>
@@ -120,10 +120,10 @@
             </div>
 
             <div v-else-if="page === 'signup'" class="hero has-text-centered is-fullheight has-bg-img">
-                <h1 class="title is-1 pt-3">Signup</h1>
+                <h1 class="title is-1 pt-3 has-text-light">Signup</h1>
                 <div class="hero-body columns">
                     <div class="column"></div>
-                    <div class="column is-quarter">
+                    <div class="column is-quarter has-background-info-light">
                         <b-field label="Phone Number" :label-position="labelPosition">
                             <b-input type="number" @keyup.native.enter="signup" v-model="phoneNumber" placeholder="Enter your phone number" required class="mt-2" validation-message="Phone number should not be empty"></b-input>
                         </b-field>
