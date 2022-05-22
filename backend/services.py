@@ -85,16 +85,26 @@ def userProfile(phoneNumber):
     else:
         return 'Error', 401
 
-@main.route('/add_donation', methods=['POST'])
-def add_donation():
+@main.route('/add_donation/<userPhoneNumber>', methods=['POST'])
+def add_donation(userPhoneNumber):
     donation_data = request.get_json()
 
-    new_donation = Donation(name=donation_data['name'], phoneNumber=donation_data['phoneNumber'], addLine1=donation_data['addLine1'], addLine2=donation_data['addLine2'], servedFor=donation_data['servedFor'], foodType=donation_data['foodType'])
+    new_donation = Donation(name=donation_data['name'], phoneNumber=donation_data['phoneNumber'], addLine1=donation_data['addLine1'], addLine2=donation_data['addLine2'], servedFor=donation_data['servedFor'], foodType=donation_data['foodType'], userPhone=userPhoneNumber)
 
     db.session.add(new_donation)
     db.session.commit()
 
     return 'Done', 201
+
+@main.route('/userDonations/<userPhoneNumber>')
+def userDonations(userPhoneNumber):
+    donation_details = db.session.query(Donation).filter_by(userPhone = userPhoneNumber).all()
+    donations = []
+
+    for donation in donation_details:
+        donations.append({'name' : donation.name, 'phoneNumber' : donation.phoneNumber, 'addLine1' : donation.addLine1, 'addLine2' : donation.addLine2, 'servedFor' : donation.servedFor, 'foodType': donation.foodType, "dateTime": donation.dateTime})
+
+    return jsonify({'donations' : donations})
 
 @main.route('/donations')
 def donations():

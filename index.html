@@ -10,54 +10,91 @@
         <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"> -->
         <style>
-            .has-bg-img { background: url('lib/food-donation3.png'); background-size: contain; background-repeat: no-repeat};
+            .has-bg-img { background: url('lib/bg1.jpg'); background-size: cover; background-repeat: no-repeat};
             .scroll::-webkit-scrollbar {display:none;}
+            .shadow{
+                text-shadow: 2px 2px 5px black;
+            }
+            .pageHeight{
+                height: 91vh;
+            }
         </style>
     </head>
     <body>
         <div id="app">
-            
-            <nav class="navbar">
-                <div class="container">
-                  <div id="navMenu" class="navbar-menu">
-                    <div class="navbar-start">
-                      <a class="navbar-item" v-if="user" @click="page='intro'">
-                        Home
-                      </a>
-                    </div>
-              
-                    <div class="navbar-end">
-                      <div class="navbar-item">
-                        <div class="buttons" v-if="signedIn === false">
-                            <b-button class="is-link" @click="page='signup'">
-                                <strong>Sign up</strong>
-                            </b-button>
-                            <b-button class="is-link" outlined @click="page='login'">
-                                Log in
-                            </b-button>
-                        </div>
-                        <div class="buttons" v-else>
-                            <b-button v-if="user" class="is-link" outlined @click="showProfile">
-                                Profile
-                            </b-button>
-                            <b-button class="is-link" @click="signOut">
-                                <strong>Sign Out</strong>
-                            </b-button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </nav>
 
-            <div v-if="page === 'intro'" class="hero is-fullheight-with-navbar has-bg-img pb-3">
+            <template>
+                <section>
+                  <b-sidebar
+                    type="is-light"
+                    :fullheight="fullheight"
+                    :fullwidth="fullwidth"
+                    :overlay="overlay"
+                    :right="right"
+                    v-model="open"
+                  >
+                    <div class="p-3">
+                      <img
+                        src="https://raw.githubusercontent.com/buefy/buefy/dev/static/img/buefy-logo.png"
+                        alt="Lightweight UI components for Vue.js based on Bulma"
+                      />
+                      <b-menu>
+                        <b-menu-list>
+                            <b-menu-item label="Your Donations" @click="userDonations"></b-menu-item>
+                            <b-menu-item label="About"></b-menu-item>
+                            <b-menu-item label="Contact"></b-menu-item>
+                        </b-menu-list>
+                      </b-menu>
+                    </div>
+                  </b-sidebar>
+                </section>
+              </template>
+
+            <template>
+                <b-navbar>
+                    <template #brand>
+                        <b-navbar-item @click="open = true">
+                            <img src="lib/menu.svg">
+                        </b-navbar-item>
+                    </template>
+                    <template #start>
+                        <b-navbar-item v-if="user" @click="page='intro'">
+                            Home
+                        </b-navbar-item>
+                    </template>
+            
+                    <template #end>
+                        <b-navbar-item tag="div">
+                            <div class="buttons" v-if="signedIn === false">
+                                <b-button class="is-link" @click="page='signup'">
+                                    <strong>Sign up</strong>
+                                </b-button>
+                                <b-button class="is-link" outlined @click="page='login'">
+                                    Log in
+                                </b-button>
+                            </div>
+                            <div class="buttons" v-else>
+                                <b-button v-if="user" class="is-link" outlined @click="showProfile">
+                                    Profile
+                                </b-button>
+                                <b-button class="is-link" @click="signOut">
+                                    <strong>Sign Out</strong>
+                                </b-button>
+                            </div>
+                        </b-navbar-item>
+                    </template>
+                </b-navbar>
+            </template>
+
+            <div v-if="page === 'intro'" class="hero pageHeight has-bg-img">
                 <div class="hero-body columns">
-                    <div class="column is-half">
+                    <div class="column is-half ml-2">
                         <section class="section">
                         <div class="content ml-2">
-                            <h2 class="has-text-light title is-2">Have Excess Food? </h2>
-                            <p class="has-text-light subtitle">Donate food to help people out of starving.<br> Your donation makes someone's life happy</p>
-                            <b-button type="is-link" @click="donate">{{showItem ? "Cancel" :"Donate"}}</b-button>
+                            <!-- <h2 class="has-text-light title is-2 shadow">Have Excess Food? </h2> -->
+                            <h1 class="has-text-light is-family-primary title is-1 shadow">Donate Food to<br> help feed the hungry</h1>
+                            <p class="has-text-light is-family-sans is-size-5 shadow">Any contribution you make today will build <br>a better future for someone. </p>
+                            <b-button type="is-link" size="is-medium" @click="donate">{{showItem ? "Cancel" :"Donate"}}</b-button>
                         </div>
                         </section>
                         <section class="section"></section>
@@ -65,9 +102,12 @@
                     </div>
                     <div class="column"></div>
                     <div class="column is-two-fifths">
-                        <section v-if="showItem === false" class="section is-small has-background-info-light pt-2 pb-2 pl-2 pr-2">
-                            <h4 class="subtitle has-text-dark is-4">If you can't feed hundred people, then feed just one.</h4>
-                            <h3 class="title has-text-dark is-3">-Mother Teresa</h3>
+                        <!-- <section class="section" ></section> -->
+                        <section class="section" v-if="showItem===false"></section>
+                        <section class="section is-medium" v-if="showItem===false"></section>
+                        <section v-if="showItem === false" class="section is-small pt-2 pb-2 pl-2 pr-2">
+                            <h4 class="title has-text-white is-4 shadow">If you can't feed hundred people, then feed just one.</h4>
+                            <h3 class="title has-text-white is-3 shadow">-Mother Teresa</h3>
                         </section>
                         <section class="section" v-if="signedIn===true & showItem===true">
                             <div class="card has-text-centered">
@@ -102,7 +142,7 @@
             </div>
 
             <div v-if="page === 'login'" id="login" class="hero has-text-centered is-fullheight has-bg-img">
-                <h1 class="title is-1 pt-3 has-text-light">Login</h1>
+                <h1 class="title is-1 pt-3 has-text-light shadow">Login</h1>
                 <div class="hero-body columns">
                     <div class="column"></div>
                     <div class="column is-quarter has-background-info-light">
@@ -113,14 +153,13 @@
                             <b-input type="password" @keyup.native.enter="login" v-model="password" placeholder="Enter your password" required class="mt-2" password-reveal validation-message="Password should not be empty"></b-input>
                         </b-field>
                         <b-button type="is-link" focused @click="login" class="p-button-text">Login</b-button>
-                        <b-button type="is-link" @click="signupPage" class="p-button-text">Signup</b-button>
                     </div>
                     <div class="column"></div>
                 </div>
             </div>
 
             <div v-else-if="page === 'signup'" class="hero has-text-centered is-fullheight has-bg-img">
-                <h1 class="title is-1 pt-3 has-text-light">Signup</h1>
+                <h1 class="title is-1 pt-3 has-text-light shadow">Signup</h1>
                 <div class="hero-body columns">
                     <div class="column"></div>
                     <div class="column is-quarter has-background-info-light">
@@ -134,7 +173,6 @@
                             <b-input type="password" @keyup.native.enter="login" v-model="passCheck" placeholder="Re-Enter your password" required class="mt-2" password-reveal validation-message="Password should not be empty"></b-input>
                         </b-field>
                         <b-button type="is-link" @click="register">Signup</b-button>   
-                        <b-button type="is-link" @click="page = 'login'">Back</b-button>
                     </div>
                     <div class="column"></div>
                 </div>
@@ -152,7 +190,7 @@
                             <b-input type="text" v-model="profile.name" readonly></b-input>
                         </b-field>
                         <b-field label="Email" :label-position="labelPosition">
-                            <b-input type="text" v-model="profile.email" readonly></b-input>
+                            <b-input type="email" v-model="profile.email" readonly></b-input>
                         </b-field>
                         <b-button type="is-link" @click="page = 'profile-edit'" class="p-button-text">Edit</b-button>
                         <b-button type="is-link" outlined @click="page = 'intro'" class="p-button-text">Back</b-button>
@@ -181,6 +219,19 @@
                     <div class="column"></div>
                 </div>
             </div>
+            
+            <div v-else-if="page === 'history'" class="hero has-text-centered pageHeight">
+                <h1 class="title is-1 ">Your Donations</h1>
+                <div class="hero-body columns">
+                    <div class="column is-quarter has-text-centered">
+                        <b-table :data="donationDetails" 
+                            :columns="donationColumns" 
+                            :sort-icon="sortIcon" 
+                            :sort-icon-size="sortIconSize" >
+                        </b-table>
+                    </div>
+                </div>
+            </div>
 
             <div v-else-if="page === 'admin'" class="hero has-text-centered">
                 <h1 class="title is-1 ">Admin</h1>
@@ -197,6 +248,17 @@
                     </div>
                 </div>
             </div>
+
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <b-icon
+                        icon="instagram"
+                        size="is-medium" 
+                    >
+                    </b-icon>
+                </div>
+              </footer>
+
         </div>
 
         <script src="lib/js/axios.min.js"></script>
@@ -252,8 +314,13 @@
                     showDonationTable: false,
                     showUserTable: false,
                     // showModal: false,
-                    formClick: false,
+                    // formClick: false,
                     instance: null,
+                    open: false,
+                    overlay: true,
+                    fullheight: true,
+                    fullwidth: false,
+                    right: false,
                     sortIcon: 'arrow-up',
                     sortIconSize: 'is-small',
                     loginDetails: '',
@@ -364,10 +431,10 @@
                 },
                 methods: {  
                     postNow(){
-                        this.formClick = !this.formClick
+                        // this.formClick = !this.formClick
                         console.log(axios) 
 
-                        this.instance.post('/add_donation', {
+                        this.instance.post('/add_donation/'+this.phoneNumber, {
                             name: this.form.name,
                             phoneNumber: this.form.phoneNumber,
                             addLine1: this.form.addLine1,
@@ -375,16 +442,6 @@
                             servedFor: this.form.servedFor,
                             foodType: this.foodType,
                         })
-                        this.donations.push({
-                            name: this.form.name,
-                            phoneNumber: this.form.phoneNumber,
-                            addLine1: this.form.addLine1,
-                            addLine2: this.form.addLine2,
-                            servedFor: this.form.servedFor,
-                            foodType: this.foodType,
-                        })
-                        localStorage.setItem("donations", JSON.stringify(this.donations))
-
                         this.$buefy.dialog.alert({
                             message: 'Form Submitted successfully!',
                             type: 'is-primary',
@@ -483,39 +540,41 @@
                                 ariaModal: true,
                             })
                         }
-                        else if(this.password !== this.passCheck){
-                            this.$buefy.dialog.alert({
-                                message: 'Password does not match!',
-                                type: 'is-danger',
-                                hasIcon: true,
-                                icon: 'times-circle',
-                                iconPack: 'fa',
-                                ariaRole: 'alertdialog',
-                                ariaModal: true,
-                            })
-                        }
                         else{
-                            this.instance.post('/signup',{
+                            if(this.password !== this.passCheck){
+                                this.$buefy.dialog.alert({
+                                    message: 'Password does not match!',
+                                    type: 'is-danger',
+                                    hasIcon: true,
+                                    icon: 'times-circle',
+                                    iconPack: 'fa',
+                                    ariaRole: 'alertdialog',
+                                    ariaModal: true,
+                                })
+                            }
+                            else{
+                                this.instance.post('/signup',{
                                 phoneNumber : this.phoneNumber,
                                 password : this.password
-                            })
-                            .then((response) => {
-                                this.$buefy.toast.open({
-                                    message: 'Signup successful',
-                                    type: 'is-success',
-                                    duration: 5000
                                 })
-                                this.page = 'login'
-                                this.phoneNumber = ''
-                                this.password = ''
-                            })
-                            .catch((error) => {
-                                this.$buefy.toast.open({
-                                    message: error.response.data,
-                                    type: 'is-danger',
-                                    duration: 5000
+                                .then((response) => {
+                                    this.$buefy.toast.open({
+                                        message: 'Signup successful',
+                                        type: 'is-success',
+                                        duration: 5000
+                                    })
+                                    this.page = 'login'
+                                    this.phoneNumber = ''
+                                    this.password = ''
                                 })
-                            })
+                                .catch((error) => {
+                                    this.$buefy.toast.open({
+                                        message: error.response.data,
+                                        type: 'is-danger',
+                                        duration: 5000
+                                    })
+                                })
+                            }
                         }
                     },
                     signOut(){
@@ -524,6 +583,7 @@
                         this.page = 'intro'   
                         this.signedIn = false
                         this.user = true
+                        this.showItem = false
                         this.form.name = '' 
                         this.form.addLine1 = ''
                         this.form.addLine2 = ''
@@ -563,6 +623,18 @@
                         this.$buefy.toast.open({
                             message: 'Profile Updated',
                             type: 'is-success',
+                        })
+                    },
+                    userDonations(){
+                        this.page = 'history'
+                        this.open = false
+                        this.instance.get('/userDonations/'+this.phoneNumber)
+                        .then((response) => {
+                            this.donationDetails = response.data.donations
+                            for(var i=0;i<this.donationDetails.length;i++){
+                                this.donationDetails[i]['dateTime'] = new Date(this.donationDetails[i]['dateTime']).toLocaleString({dateStyle:"short",timeStyle:"short"})
+                            }
+                            console.log(response)
                         })
                     },
                     showProfile(){
