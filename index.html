@@ -10,7 +10,7 @@
         <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"> -->
         <style>
-            .has-bg-img { background: url('lib/bg1.jpg'); background-size: cover; background-repeat: no-repeat};
+            .has-bg-img { background: url('lib/bg1.jpg'); background-size: cover; background-position-y: 50%; background-repeat: no-repeat;};
             .scroll::-webkit-scrollbar {display:none;}
             .shadow{
                 text-shadow: 2px 2px 5px black;
@@ -34,10 +34,11 @@
                     v-model="open"
                   >
                     <div class="p-3">
-                      <img
-                        src="https://raw.githubusercontent.com/buefy/buefy/dev/static/img/buefy-logo.png"
-                        alt="Lightweight UI components for Vue.js based on Bulma"
-                      />
+                      <!-- <img
+                        src=""
+                        alt=""
+                      /> -->
+                      <h2 class="title is-2">Food<br>Donation</h2>
                       <b-menu>
                         <b-menu-list>
                             <b-menu-item label="Your Donations" @click="userDonations"></b-menu-item>
@@ -51,9 +52,9 @@
               </template>
 
             <template>
-                <b-navbar>
+                <b-navbar :transparent="true" :shadow="true">
                     <template #brand>
-                        <b-navbar-item @click="open = true">
+                        <b-navbar-item  @click="open = true" class="ml-2">
                             <img src="lib/menu.svg">
                         </b-navbar-item>
                     </template>
@@ -178,7 +179,7 @@
                 </div>
             </div>
 
-            <div v-else-if="page === 'profile'" class="hero has-text-centered is-fullheight-with-navbar has-bg-img">
+            <div v-else-if="page === 'profile'" class="hero has-text-centered is-fullheight pageHeight has-bg-img">
                 <h1 class="title is-1 pt-6 has-text-light">Profile</h1>
                 <div class="hero-body columns">
                     <div class="column"></div>
@@ -193,7 +194,6 @@
                             <b-input type="email" v-model="profile.email" readonly></b-input>
                         </b-field>
                         <b-button type="is-link" @click="page = 'profile-edit'" class="p-button-text">Edit</b-button>
-                        <b-button type="is-link" outlined @click="page = 'intro'" class="p-button-text">Back</b-button>
                     </div>
                     <div class="column"></div>
                 </div>
@@ -249,12 +249,27 @@
                 </div>
             </div>
 
-            <footer class="footer">
+            <footer class="footer has-background-black ">
                 <div class="content has-text-centered">
-                    <b-icon
-                        icon="instagram"
-                        size="is-medium" 
-                    >
+                    <h3 class="subtitle has-text-link">Connect with me</h3>
+                    <a href="https://www.instagram.com/sooraj_jsbabu/">
+                        <b-icon
+                            icon="instagram"
+                            size="is-large" 
+                        >
+                    </a>
+                    <a href="https://www.linkedin.com/in/soorajsrinivasababu/">
+                        <b-icon
+                            icon="linkedin"
+                            size="is-large" 
+                        >
+                    </a>
+                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=soorajjsbabu@gmail.com">
+                        <b-icon
+                            icon="gmail"
+                            size="is-large" 
+                        >
+                    </a>
                     </b-icon>
                 </div>
               </footer>
