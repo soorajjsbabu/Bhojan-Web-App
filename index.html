@@ -10,53 +10,61 @@
         <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"> -->
         <style>
-            .has-bg-img { background: url('lib/food-donation3.png'); background-size: contain; background-repeat: no-repeat};
-            .scroll::-webkit-scrollbar {display:none;}
+            .has-bg-img { 
+                background: url('lib/food-donation3.png'); background-size: contain; background-repeat: no-repeat
+            }
+            .scroll::-webkit-scrollbar {
+                display:none;
+            }
+            .shadow{
+                text-shadow: 2px 2px 5px black;
+            }
+            .pageHeight{
+                height: 91vh;
+            }
         </style>
     </head>
     <body>
         <div id="app">
-            
-            <nav class="navbar">
-                <div class="container">
-                  <div id="navMenu" class="navbar-menu">
-                    <div class="navbar-start">
-                      <a class="navbar-item" v-if="user" @click="page='intro'">
-                        Home
-                      </a>
-                    </div>
-              
-                    <div class="navbar-end">
-                      <div class="navbar-item">
-                        <div class="buttons" v-if="signedIn === false">
-                            <b-button class="is-link" @click="page='signup'">
-                                <strong>Sign up</strong>
-                            </b-button>
-                            <b-button class="is-link" outlined @click="page='login'">
-                                Log in
-                            </b-button>
-                        </div>
-                        <div class="buttons" v-else>
-                            <b-button v-if="user" class="is-link" outlined @click="showProfile">
-                                Profile
-                            </b-button>
-                            <b-button class="is-link" @click="signOut">
-                                <strong>Sign Out</strong>
-                            </b-button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </nav>
 
-            <div v-if="page === 'intro'" class="hero is-fullheight-with-navbar has-bg-img pb-3">
+            <template>
+                <b-navbar :transparent="true" :shadow="true">
+                    <template #start>
+                        <b-navbar-item v-if="user" @click="page='intro'">
+                            Home
+                        </b-navbar-item>
+                    </template>
+            
+                    <template #end>
+                        <b-navbar-item tag="div">
+                            <div class="buttons" v-if="signedIn === false">
+                                <b-button class="is-link" @click="page='signup'">
+                                    <strong>Sign up</strong>
+                                </b-button>
+                                <b-button class="is-link" outlined @click="page='login'">
+                                    Log in
+                                </b-button>
+                            </div>
+                            <div class="buttons" v-else>
+                                <b-button v-if="user" class="is-link" outlined @click="showProfile">
+                                    Profile
+                                </b-button>
+                                <b-button class="is-link" @click="signOut">
+                                    <strong>Sign Out</strong>
+                                </b-button>
+                            </div>
+                        </b-navbar-item>
+                    </template>
+                </b-navbar>
+            </template>  
+
+            <div v-if="page === 'intro'" class="hero pageHeight has-bg-img">
                 <div class="hero-body columns">
                     <div class="column is-half">
                         <section class="section">
                         <div class="content ml-2">
-                            <h2 class="has-text-light title is-2">Have Excess Food? </h2>
-                            <p class="has-text-light subtitle">Donate food to help people out of starving.<br> Your donation makes someone's life happy</p>
+                            <h2 class="has-text-light shadow title is-2">Have Excess Food? </h2>
+                            <p class="has-text-light shadow subtitle">Donate food to help people out of starving<br> Your donation makes someone's life happy</p>
                             <b-button type="is-link" @click="donate">{{showItem ? "Cancel" :"Donate"}}</b-button>
                         </div>
                         </section>
@@ -65,12 +73,14 @@
                     </div>
                     <div class="column"></div>
                     <div class="column is-two-fifths">
-                        <section v-if="showItem === false" class="section is-small has-background-info-light pt-2 pb-2 pl-2 pr-2">
-                            <h4 class="subtitle has-text-dark is-4">If you can't feed hundred people, then feed just one.</h4>
-                            <h3 class="title has-text-dark is-3">-Mother Teresa</h3>
+                        <section class="section" v-if="showItem===false"></section>
+                        <section class="section is-medium" v-if="showItem===false"></section>
+                        <section v-if="showItem === false" class="section is-small pt-2 pb-2 pl-2 pr-2">
+                            <h4 class="subtitle has-text-white is-4 shadow">If you can't feed hundred people, then feed just one.</h4>
+                            <h3 class="title has-text-white is-3 shadow">-Mother Teresa</h3>
                         </section>
                         <section class="section" v-if="signedIn===true & showItem===true">
-                            <div class="card has-text-centered">
+                            <div class="card has-background-info-light has-text-centered">
                                 <div class="card-content">
                                     <div class="content">   
                                         <h2 class="title is-2">Donate here!</h2>  
@@ -102,7 +112,7 @@
             </div>
 
             <div v-if="page === 'login'" id="login" class="hero has-text-centered is-fullheight has-bg-img">
-                <h1 class="title is-1 pt-3 has-text-light">Login</h1>
+                <h1 class="title is-1 pt-3 has-text-light shadow">Login</h1>
                 <div class="hero-body columns">
                     <div class="column"></div>
                     <div class="column is-quarter has-background-info-light">
@@ -120,7 +130,7 @@
             </div>
 
             <div v-else-if="page === 'signup'" class="hero has-text-centered is-fullheight has-bg-img">
-                <h1 class="title is-1 pt-3 has-text-light">Signup</h1>
+                <h1 class="title is-1 pt-3 has-text-light shadow">Signup</h1>
                 <div class="hero-body columns">
                     <div class="column"></div>
                     <div class="column is-quarter has-background-info-light">
@@ -141,7 +151,7 @@
             </div>
 
             <div v-else-if="page === 'profile'" class="hero has-text-centered is-fullheight-with-navbar has-bg-img">
-                <h1 class="title is-1 pt-6 has-text-light">Profile</h1>
+                <h1 class="title is-1 pt-6 has-text-light shadow">Profile</h1>
                 <div class="hero-body columns">
                     <div class="column"></div>
                     <div class="column is-quarter has-background-info-light">
@@ -152,7 +162,7 @@
                             <b-input type="text" v-model="profile.name" readonly></b-input>
                         </b-field>
                         <b-field label="Email" :label-position="labelPosition">
-                            <b-input type="text" v-model="profile.email" readonly></b-input>
+                            <b-input type="email" v-model="profile.email" readonly></b-input>
                         </b-field>
                         <b-button type="is-link" @click="page = 'profile-edit'" class="p-button-text">Edit</b-button>
                         <b-button type="is-link" outlined @click="page = 'intro'" class="p-button-text">Back</b-button>
@@ -162,7 +172,7 @@
             </div>
 
             <div v-else-if="page === 'profile-edit'" class="hero has-text-centered is-fullheight-with-navbar has-bg-img">
-                <h1 class="title is-1 pt-6 has-text-light">Edit Profile</h1>
+                <h1 class="title is-1 pt-6 has-text-light shadow">Edit Profile</h1>
                 <div class="hero-body columns">
                     <div class="column"></div>
                     <div class="column is-quarter has-background-info-light">
@@ -186,8 +196,8 @@
                 <h1 class="title is-1 ">Admin</h1>
                 <div class="hero-body columns">
                     <div class="column is-quarter has-text-centered">
-                        <b-button type="is-primary " outlined @click="showDonation" class="p-button-text">Donations</b-button>
-                        <b-button type="is-primary " outlined @click="showUser" class="p-button-text">User Details</b-button>
+                        <b-button type="is-link " outlined @click="showDonation" class="p-button-text">Donations</b-button>
+                        <b-button type="is-link " outlined @click="showUser" class="p-button-text">User Details</b-button>
                         <b-table :data="userDetails" 
                         :columns="userColumns" 
                         :sort-icon="sortIcon" 
@@ -387,7 +397,7 @@
 
                         this.$buefy.dialog.alert({
                             message: 'Form Submitted successfully!',
-                            type: 'is-primary',
+                            type: 'is-link',
                             confirmText: 'You\'ve made someone happy : )',
                         })
                         this.showItem = false
@@ -431,6 +441,10 @@
                                     this.user = false
                                     this.signedIn = true
                                     localStorage.setItem("phoneNumber", this.phoneNumber)
+                                    this.$buefy.toast.open({
+                                        message: 'Login Successful!',
+                                        type: 'is-success',
+                                    })
                                 }
                                 else if(response.status === 201){
                                     this.page = 'intro'
@@ -438,6 +452,10 @@
                                     this.form.phoneNumber = this.phoneNumber
                                     this.signedIn = true
                                     localStorage.setItem("phoneNumber", this.phoneNumber)
+                                    this.$buefy.toast.open({
+                                        message: 'Login Successful!',
+                                        type: 'is-success',
+                                    })
                                 }
                             })
                             .catch((error) => {
@@ -656,7 +674,7 @@
                                                 @click="$emit('close')" />
                                             <b-button
                                                 label="Update"
-                                                type="is-primary"
+                                                type="is-link"
                                                 @click="$emit('update', {name: newName, phoneNumber: phoneNumber, email: newEmail, rowIndex: rowIndex});$emit('close')" />
                                         </footer>
                                     </div>

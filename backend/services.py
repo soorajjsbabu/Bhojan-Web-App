@@ -5,6 +5,10 @@ from sqlalchemy import update
 
 main = Blueprint('main', __name__)
 
+# @main.route('/')
+# def success():
+#     return 'Success', 201
+
 @main.route('/signup', methods=['POST'])
 def signup():
     user_data = request.get_json()
