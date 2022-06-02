@@ -32,6 +32,7 @@
                     :overlay="overlay"
                     :right="right"
                     v-model="open"
+                    v-if="signedIn & user"
                   >
                     <div class="p-3">
                       <!-- <img
@@ -43,7 +44,7 @@
                         <b-menu-list>
                             <b-menu-item label="Your Donations" @click="userDonations"></b-menu-item>
                             <b-menu-item label="About"></b-menu-item>
-                            <b-menu-item label="Contact"></b-menu-item>
+                            <!-- <b-menu-item label="Contact"></b-menu-item> -->
                         </b-menu-list>
                       </b-menu>
                     </div>
@@ -54,7 +55,7 @@
             <template>
                 <b-navbar :transparent="true" :shadow="true">
                     <template #brand>
-                        <b-navbar-item  @click="open = true" class="ml-2">
+                        <b-navbar-item  @click="open = true" class="ml-2" v-if="signedIn & user">
                             <img src="lib/menu.svg">
                         </b-navbar-item>
                     </template>
@@ -67,10 +68,10 @@
                     <template #end>
                         <b-navbar-item tag="div">
                             <div class="buttons" v-if="signedIn === false">
-                                <b-button class="is-link" @click="page='signup'">
+                                <b-button class="is-link" @click="page='signup';showFooter = false">
                                     <strong>Sign up</strong>
                                 </b-button>
-                                <b-button class="is-link" outlined @click="page='login'">
+                                <b-button class="is-link" outlined @click="page='login';showFooter = false">
                                     Log in
                                 </b-button>
                             </div>
@@ -142,11 +143,11 @@
                 </div>
             </div>
 
-            <div v-if="page === 'login'" id="login" class="hero has-text-centered is-fullheight has-bg-img">
+            <div v-if="page === 'login'" id="login" class="hero has-text-centered pageHeight is-medium has-bg-img">
                 <h1 class="title is-1 pt-3 has-text-light shadow">Login</h1>
                 <div class="hero-body columns">
                     <div class="column"></div>
-                    <div class="column is-quarter has-background-info-light">
+                    <div class="column is-quarter has-background-info-light mb-6 pt-6">
                         <b-field label="Phone Number" :label-position="labelPosition">
                             <b-input type="number" v-model="phoneNumber" placeholder="Enter your phone number" required class="mt-2" validation-message="Phone number should not be empty"></b-input>
                         </b-field>
@@ -159,11 +160,11 @@
                 </div>
             </div>
 
-            <div v-else-if="page === 'signup'" class="hero has-text-centered is-fullheight has-bg-img">
+            <div v-else-if="page === 'signup'" class="hero has-text-centered pageHeight is-medium has-bg-img">
                 <h1 class="title is-1 pt-3 has-text-light shadow">Signup</h1>
                 <div class="hero-body columns">
                     <div class="column"></div>
-                    <div class="column is-quarter has-background-info-light">
+                    <div class="column is-quarter has-background-info-light mb-6">
                         <b-field label="Phone Number" :label-position="labelPosition">
                             <b-input type="number" @keyup.native.enter="signup" v-model="phoneNumber" placeholder="Enter your phone number" required class="mt-2" validation-message="Phone number should not be empty"></b-input>
                         </b-field>
@@ -179,11 +180,11 @@
                 </div>
             </div>
 
-            <div v-else-if="page === 'profile'" class="hero has-text-centered is-fullheight pageHeight has-bg-img">
-                <h1 class="title is-1 pt-6 has-text-light">Profile</h1>
+            <div v-else-if="page === 'profile'" class="hero has-text-centered pageHeight is-medium has-bg-img">
+                <h1 class="title is-1 pt-6 has-text-light shadow">Profile</h1>
                 <div class="hero-body columns">
                     <div class="column"></div>
-                    <div class="column is-quarter has-background-info-light">
+                    <div class="column is-quarter has-background-info-light mb-6">
                         <b-field label="Phone Number" :label-position="labelPosition">
                             <b-input type="text" native-size="10" v-model="phoneNumber" readonly></b-input>
                         </b-field>
@@ -193,17 +194,17 @@
                         <b-field label="Email" :label-position="labelPosition">
                             <b-input type="email" v-model="profile.email" readonly></b-input>
                         </b-field>
-                        <b-button type="is-link" @click="page = 'profile-edit'" class="p-button-text">Edit</b-button>
+                        <b-button type="is-link" @click="page = 'profile-edit';showFooter = true" class="p-button-text">Edit</b-button>
                     </div>
                     <div class="column"></div>
                 </div>
             </div>
 
-            <div v-else-if="page === 'profile-edit'" class="hero has-text-centered is-fullheight-with-navbar has-bg-img">
-                <h1 class="title is-1 pt-6 has-text-light">Edit Profile</h1>
+            <div v-else-if="page === 'profile-edit'" class="hero has-text-centered pageHeight is-medium has-bg-img">
+                <h1 class="title is-1 pt-6 has-text-light shadow">Profile</h1>
                 <div class="hero-body columns">
                     <div class="column"></div>
-                    <div class="column is-quarter has-background-info-light">
+                    <div class="column is-quarter has-background-info-light mb-6">
                         <b-field label="Phone Number" :label-position="labelPosition">
                             <b-input type="text" native-size="10" v-model="phoneNumber" readonly></b-input>
                         </b-field>
@@ -237,8 +238,8 @@
                 <h1 class="title is-1 ">Admin</h1>
                 <div class="hero-body columns">
                     <div class="column is-quarter has-text-centered">
-                        <b-button type="is-primary " outlined @click="showDonation" class="p-button-text">Donations</b-button>
-                        <b-button type="is-primary " outlined @click="showUser" class="p-button-text">User Details</b-button>
+                        <b-button type="is-link" outlined @click="showDonation" class="p-button-text">Donations</b-button>
+                        <b-button type="is-link" outlined @click="showUser" class="p-button-text">User Details</b-button>
                         <b-table :data="userDetails" 
                         :columns="userColumns" 
                         :sort-icon="sortIcon" 
@@ -249,15 +250,15 @@
                 </div>
             </div>
 
-            <footer class="footer has-background-black ">
+            <footer class="footer has-background-black" v-if="showFooter">
                 <div class="content has-text-centered">
                     <h3 class="subtitle has-text-link">Connect with me</h3>
-                    <a href="https://www.instagram.com/sooraj_jsbabu/">
+                    <!-- <a href="https://www.instagram.com/sooraj_jsbabu/">
                         <b-icon
                             icon="instagram"
                             size="is-large" 
                         >
-                    </a>
+                    </a> -->
                     <a href="https://www.linkedin.com/in/soorajsrinivasababu/">
                         <b-icon
                             icon="linkedin"
@@ -328,6 +329,7 @@
                     showItem: false,
                     showDonationTable: false,
                     showUserTable: false,
+                    showFooter: false,
                     // showModal: false,
                     // formClick: false,
                     instance: null,
@@ -424,11 +426,13 @@
                     }
                     else if(this.phoneNumber === '' || this.phoneNumber === null){
                         this.page = 'intro'
+                        this.showFooter = true
                     }
                     else if(this.phoneNumber !== ''){
                         this.page = 'intro'
                         this.signedIn = true
                         this.user = true
+                        this.showFooter = true
                     }
                 },
                 computed: {
@@ -448,7 +452,6 @@
                     postNow(){
                         // this.formClick = !this.formClick
                         console.log(axios) 
-
                         this.instance.post('/add_donation/'+this.phoneNumber, {
                             name: this.form.name,
                             phoneNumber: this.form.phoneNumber,
@@ -459,7 +462,7 @@
                         })
                         this.$buefy.dialog.alert({
                             message: 'Form Submitted successfully!',
-                            type: 'is-primary',
+                            type: 'is-link',
                             confirmText: 'You\'ve made someone happy : )',
                         })
                         this.showItem = false
@@ -509,6 +512,7 @@
                                     // this.page = 'home'                            
                                     this.form.phoneNumber = this.phoneNumber
                                     this.signedIn = true
+                                    this.showFooter = true
                                     localStorage.setItem("phoneNumber", this.phoneNumber)
                                 }
                             })
@@ -525,7 +529,7 @@
                                 })
                             })
                         }
-                            // console.log(this.form)
+                        // console.log(this.form)
                     },
                     signupPage(){
                         this.phoneNumber = ''
@@ -654,6 +658,7 @@
                     },
                     showProfile(){
                         this.page = 'profile'
+                        this.showFooter = true
                         this.showNavbar = true
                         this.instance.get('/userProfile/'+this.phoneNumber)
                         .then((response) => {
@@ -743,7 +748,7 @@
                                                 @click="$emit('close')" />
                                             <b-button
                                                 label="Update"
-                                                type="is-primary"
+                                                type="is-link"
                                                 @click="$emit('update', {name: newName, phoneNumber: phoneNumber, email: newEmail, rowIndex: rowIndex});$emit('close')" />
                                         </footer>
                                     </div>
@@ -775,12 +780,18 @@
                         event.edit = '<img src=lib/edit.svg>'
                         event.delete = '<img src=lib/delete.svg>'
                         this.userDetails.splice(rowIndex, 1, event)
-                        this.$buefy.toast.open('User details updated!')
+                        this.$buefy.toast.open({
+                            message: 'User details updated!',
+                            type: 'is-success',
+                        })
                         // console.log('Triggered')
                         console.log(event)
                     },
                     deleteUser(rowIndex){
-                        this.$buefy.toast.open('Account deleted!')
+                        this.$buefy.toast.open({
+                            message: 'Account deleted!',
+                            type: 'is-success',
+                        })
                         this.instance.delete('/delete_user/'+this.userDetails[rowIndex]['phoneNumber'])
                         this.userDetails.splice(rowIndex, 1)
                         // console.log(this.userDetails)
