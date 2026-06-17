@@ -1,8 +1,8 @@
-# 🍱 Bhojan — Food Donation Web App
+# 🍱 Food Donation Web App
 
 > *"If you can't feed a hundred people, then just feed one."* — Mother Teresa
 
-Bhojan is a web application that makes food donation simple and accessible. People with surplus food after a party or event can donate it from their doorstep — the admin coordinates with a delivery team to get the food to orphanages, old age homes, and people in need.
+This is a web application that makes food donation simple and accessible. People with surplus food after a party or event can donate it from their doorstep - the admin coordinates with a delivery team to get the food to orphanages, old age homes, and people in need.
 
 ## About
 
@@ -46,7 +46,7 @@ Built as a final-year B.Sc. Computer Science project at Loyola College (Autonomo
 ## Project Structure
 
 ```
-Bhojan-Web-App/
+food-donation/
 ├── backend/
 │   ├── __init__.py       # App factory, db init, CORS
 │   ├── models.py         # SQLAlchemy models (User, Donation, Registry)
@@ -87,8 +87,8 @@ sudo apt install python3-pip pipenv sqlite3
 ### Installation
 
 ```bash
-git clone https://github.com/soorajjsbabu/Bhojan-Web-App.git
-cd Bhojan-Web-App
+git clone https://github.com/soorajjsbabu/food-donation.git
+cd food-donation
 pipenv install flask flask-sqlalchemy flask-cors
 ```
 
