@@ -1,141 +1,146 @@
-# 🍱 Food Donation Web App
+# Food Donation Web App
 
 > *"If you can't feed a hundred people, then just feed one."* — Mother Teresa
 
-This is a web application that makes food donation simple and accessible. People with surplus food after a party or event can donate it from their doorstep - the admin coordinates with a delivery team to get the food to orphanages, old age homes, and people in need.
+A web application that makes food donation simple and accessible. People with surplus food after a party or event can submit a donation request from their doorstep — the admin coordinates with a delivery team to get the food to orphanages, old age homes, and people in need.
 
 ## About
 
-Built as a final-year B.Sc. Computer Science project at Loyola College (Autonomous), Chennai (2022).
+Built as a final-year B.Sc. Computer Science project at Loyola College (Autonomous), Chennai (2022). Refactored to a modern stack with Docker support.
 
 ## Features
 
-**User**
-- Register and log in via phone number and password
-- Submit a food donation form with pickup address and food details
-- View donation history with date and time
-- View and edit profile
-- Connect via LinkedIn and email links in the footer
+**Donors**
+- Sign up and log in with email and password (Firebase Authentication — no credentials stored in the database)
+- Submit a food donation request with pickup address, food type, and number of people served
+- View personal donation history
 
 **Admin**
-- View all submitted donations with full details and timestamps
-- View, edit, and delete registered users
-- Accessible via hardcoded phone number `12345`
+- View all submitted donations with full details, timestamps, and donor email
+- Click column headers to sort
+- Access controlled by a designated admin email (set via environment variable)
+
+**Security**
+- All API routes require a valid Firebase ID token (Bearer token)
+- Admin routes additionally verify the token email matches `ADMIN_EMAIL`
+- Rate limiting: 10 donation submissions per hour per IP (global: 200/hour, 60/minute)
+- Inline auth modal — unauthenticated users can log in without leaving the page
 
 ## Tech Stack
 
 | Layer | Technology |
 |---|---|
-| Frontend | HTML, CSS, Vue.js 2, Buefy, Bulma |
-| Backend | Python 3, Flask, Flask-SQLAlchemy, Flask-CORS |
-| Database | SQLite3 |
-| HTTP Client | Axios |
-| Environment | Pipenv |
-| IDE | Visual Studio Code |
-
-> All frontend dependencies (Vue, Buefy, Bulma, Axios, FontAwesome) are bundled locally under `lib/` — no internet connection required to run the app.
+| Frontend | Vue 3, Vite, Tailwind CSS v4, Heroicons |
+| Backend | Python 3, Flask, Flask-SQLAlchemy, Flask-CORS, Flask-Limiter |
+| Authentication | Firebase Authentication (email/password) |
+| Database | SQLite (via Flask-SQLAlchemy) |
+| HTTP Client | Axios (with Firebase token interceptor) |
+| Container | Docker + Docker Compose, Nginx |
 
 ## Database Schema
 
-**Donations** — `id`, `name`, `phone_number`, `address_line_1`, `address_line_2`, `served_for`, `food_type`, `date_time`, `user_phone` (FK)
-
-**User** — `phone_number` (PK), `name`, `email`
-
-**Registry** — `phone_number` (PK), `password`
+**Donation** — `id`, `name`, `phoneNumber`, `addLine1`, `addLine2`, `servedFor`, `foodType`, `dateTime`, `userEmail`
 
 ## Project Structure
 
 ```
 food-donation/
 ├── backend/
-│   ├── __init__.py       # App factory, db init, CORS
-│   ├── models.py         # SQLAlchemy models (User, Donation, Registry)
-│   ├── services.py       # Flask routes / API endpoints
-│   └── database.db       # SQLite database (created on first run)
-├── lib/                  # Bundled frontend dependencies (offline)
-│   ├── css/              # Buefy, Bulma, Material Design Icons
-│   ├── js/               # Vue.js, Buefy, Axios
-│   └── fontawesome/
-├── index.html            # Single-page frontend (Vue.js)
+│   ├── __init__.py          # App factory, db, CORS, rate limiter, auth decorators
+│   ├── models.py            # SQLAlchemy model (Donation)
+│   └── services.py          # API routes
+├── src/
+│   ├── components/
+│   │   ├── AuthModal.vue    # Inline login/signup modal
+│   │   ├── NavBar.vue
+│   │   └── SideDrawer.vue
+│   ├── views/
+│   │   ├── HomePage.vue     # Landing page with donation form toggle
+│   │   ├── LoginPage.vue
+│   │   ├── SignupPage.vue
+│   │   ├── DonateForm.vue
+│   │   ├── HistoryPage.vue
+│   │   └── AdminPage.vue
+│   ├── stores/auth.js       # Reactive auth state (Firebase-backed)
+│   ├── api.js               # Axios instance with token interceptor
+│   ├── firebase.js          # Firebase app init
+│   └── router/index.js
+├── Dockerfile
+├── docker-compose.yml
+├── nginx.conf
+├── run.py                   # Flask entry point (creates tables on first run)
 ├── Pipfile
-└── Pipfile.lock
+├── .env.example
+└── .gitignore
 ```
 
 ## API Endpoints
 
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/signup` | Register a new user |
-| POST | `/login` | Authenticate user |
-| POST | `/add_user_profile` | Create user profile |
-| PUT | `/update_user` | Update user profile |
-| GET | `/userProfile/<phoneNumber>` | Get user profile |
-| DELETE | `/delete_user/<phoneNumber>` | Delete a user |
-| GET | `/users` | Get all users (admin) |
-| POST | `/add_donation/<userPhoneNumber>` | Submit a donation |
-| GET | `/userDonations/<userPhoneNumber>` | Get donations by user |
-| GET | `/donations` | Get all donations (admin) |
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| POST | `/add_donation` | User | Submit a donation request |
+| GET | `/userDonations` | User | Get the current user's donations |
+| GET | `/donations` | Admin | Get all donations |
 
 ## Getting Started
 
 ### Prerequisites
 
-```bash
-sudo apt install python3-pip pipenv sqlite3
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- A [Firebase project](https://console.firebase.google.com/) with **Email/Password** sign-in enabled
+
+### Firebase setup
+
+1. Go to Firebase Console → Project Settings → Your Apps → Web app → copy config values
+2. Go to Project Settings → Service Accounts → Generate new private key → save as `firebase-service-account.json` in the project root
+3. In Firebase Console → Authentication → Sign-in method → enable **Email/Password**
+4. Create one user manually in Firebase Console → Authentication → Users — this will be your admin account
+
+### Environment variables
+
+Copy `.env.example` to `.env` and fill in your values:
+
+```env
+VITE_FIREBASE_API_KEY=AIzaSy...
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_ADMIN_EMAIL=admin@yourdomain.com
+
+FIREBASE_SERVICE_ACCOUNT_PATH=service-account.json
+ADMIN_EMAIL=admin@yourdomain.com
 ```
 
-### Installation
+### Run with Docker
 
 ```bash
-git clone https://github.com/soorajjsbabu/food-donation.git
-cd food-donation
-pipenv install flask flask-sqlalchemy flask-cors
+docker compose up --build
 ```
 
-### Initialize the Database
+- Frontend: http://localhost
+- Backend API: http://localhost:5000
 
-Run once inside the pipenv shell:
+### Run locally (without Docker)
+
+**Backend:**
 
 ```bash
+pipenv install
 pipenv shell
-python3
+python run.py
 ```
 
-```python
-from backend.models import Donation, User
-from backend import db, create_app
-db.create_all(app=create_app())
-```
-
-### Run the App
+**Frontend:**
 
 ```bash
-pipenv shell
-export FLASK_APP=backend
-export FLASK_DEBUG=1
-flask run
-```
-
-Then open `index.html` in your browser. The Flask API runs at `http://localhost:5000`.
-
-To free port 5000 if needed:
-
-```bash
-sudo fuser -k 5000/tcp
-```
-
-To inspect the database directly:
-
-```bash
-sqlite3
-sqlite> .open backend/database.db
+npm install
+npm run dev
 ```
 
 ## Future Enhancements
 
-- OTP-based login *(deferred — requires internet connectivity)*
 - Monthly email summary sent to donors
 - About page describing the cause
+- Push notifications when a donation is picked up
 
 ## License
 

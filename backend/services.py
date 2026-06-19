@@ -1,121 +1,55 @@
 from flask import Blueprint, jsonify, request
-from . import db 
-from .models import User, Donation, Registry
-from sqlalchemy import update
+from . import db, limiter, require_auth, require_admin
+from .models import Donation
 
 main = Blueprint('main', __name__)
 
-# @main.route('/')
-# def success():
-#     return 'Success', 201
+# /signup and /login removed — Firebase handles authentication
 
-@main.route('/signup', methods=['POST'])
-def signup():
-    user_data = request.get_json()
-    
-    try:
-        if db.session.query(Registry).filter(Registry.phoneNumber == user_data['phoneNumber']).first():
-            return 'Phone number already registered', 401
-        
-        else:
-            new_user = Registry(phoneNumber=user_data['phoneNumber'], password=user_data['password'])
-
-            db.session.add(new_user)
-            db.session.commit()
-
-            return 'Done', 201
-    
-    except Exception:
-        return 'Signup unsuccessful', 401
-
-@main.route('/login', methods=['POST'])
-def login():
-    user_data = request.get_json()
-
-    login_data = db.session.query(Registry).filter(Registry.phoneNumber == user_data['phoneNumber'], Registry.password == user_data['password']).first()
-    # user_login = Registry(phoneNumber=user_data['phoneNumber'], name=user_data['name'])
-    if login_data:
-        return 'OK', 201
-    elif db.session.query(Registry).filter(Registry.phoneNumber == user_data['phoneNumber']).first():
-        return 'Incorrect password', 401
-    else:
-        return 'Phone number not registered', 401
-
-@main.route('/add_user_profile', methods=['POST'])
-def add_user_profile():
-    user_profile_data = request.get_json()
-
-    new_user_profile = User(phoneNumber=user_profile_data['phoneNumber'], name=user_profile_data['name'], email=user_profile_data['email'])
-
-    db.session.add(new_user_profile)
+@main.route('/add_donation', methods=['POST'])
+@limiter.limit("10 per hour")
+@require_auth
+def add_donation():
+    data = request.get_json()
+    donation = Donation(
+        name=data['name'],
+        phoneNumber=data['phoneNumber'],
+        addLine1=data['addLine1'],
+        addLine2=data['addLine2'],
+        servedFor=data['servedFor'],
+        foodType=data['foodType'],
+        userEmail=request.user_email,
+    )
+    db.session.add(donation)
     db.session.commit()
-
     return 'Done', 201
 
-@main.route('/update_user', methods=['PUT'])
-def update_user():
-    user_data = request.get_json()
-    print(user_data)
-    db.session.query(User).\
-       filter(User.phoneNumber == user_data['phoneNumber']).\
-       update({"name":user_data['name'], "email":user_data['email']})
-    db.session.commit()
+@main.route('/userDonations')
+@require_auth
+def userDonations():
+    rows = db.session.query(Donation).filter_by(userEmail=request.user_email).all()
+    return jsonify({'donations': [_donation_dict(d) for d in rows]})
 
-    return 'Done', 201
-
-@main.route('/delete_user/<phoneNumber>', methods=['DELETE'])
-def delete_user(phoneNumber):
-    db.session.query(User).\
-       filter(User.phoneNumber == phoneNumber).delete()
-    db.session.commit()
-
-    return 'Done', 201
-
-@main.route('/users')
-def users():
-    user_details = User.query.all()
-    users = []
-
-    for user in user_details:
-        users.append({'phoneNumber' : user.phoneNumber, 'name' : user.name, 'email' : user.email})
-
-    return jsonify({'users' : users})
-
-@main.route('/userProfile/<phoneNumber>')
-def userProfile(phoneNumber):
-    user_profile = db.session.query(User).filter_by(phoneNumber = phoneNumber).first()
-    if user_profile:
-        return jsonify({'profile' : {'name' : user_profile.name, 'email' : user_profile.email}})
-    else:
-        return 'Error', 401
-
-@main.route('/add_donation/<userPhoneNumber>', methods=['POST'])
-def add_donation(userPhoneNumber):
-    donation_data = request.get_json()
-
-    new_donation = Donation(name=donation_data['name'], phoneNumber=donation_data['phoneNumber'], addLine1=donation_data['addLine1'], addLine2=donation_data['addLine2'], servedFor=donation_data['servedFor'], foodType=donation_data['foodType'], userPhone=userPhoneNumber)
-
-    db.session.add(new_donation)
-    db.session.commit()
-
-    return 'Done', 201
-
-@main.route('/userDonations/<userPhoneNumber>')
-def userDonations(userPhoneNumber):
-    donation_details = db.session.query(Donation).filter_by(userPhone = userPhoneNumber).all()
-    donations = []
-
-    for donation in donation_details:
-        donations.append({'name' : donation.name, 'phoneNumber' : donation.phoneNumber, 'addLine1' : donation.addLine1, 'addLine2' : donation.addLine2, 'servedFor' : donation.servedFor, 'foodType': donation.foodType, "dateTime": donation.dateTime})
-
-    return jsonify({'donations' : donations})
+# ── Admin-only routes ────────────────────────────────────────────────────────
 
 @main.route('/donations')
+@require_admin
 def donations():
-    donation_details = Donation.query.all()
-    donations = []
+    rows = Donation.query.all()
+    return jsonify({'donations': [_donation_dict(d, include_email=True) for d in rows]})
 
-    for donation in donation_details:
-        donations.append({'name' : donation.name, 'phoneNumber' : donation.phoneNumber, 'addLine1' : donation.addLine1, 'addLine2' : donation.addLine2, 'servedFor' : donation.servedFor, 'foodType': donation.foodType, "dateTime": donation.dateTime})
+# ── Helpers ──────────────────────────────────────────────────────────────────
 
-    return jsonify({'donations' : donations})
+def _donation_dict(d, include_email=False):
+    out = {
+        'name': d.name,
+        'phoneNumber': d.phoneNumber,
+        'addLine1': d.addLine1,
+        'addLine2': d.addLine2,
+        'servedFor': d.servedFor,
+        'foodType': d.foodType,
+        'dateTime': d.dateTime,
+    }
+    if include_email:
+        out['userEmail'] = d.userEmail
+    return out
